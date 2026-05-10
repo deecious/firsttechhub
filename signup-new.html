@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up | FirstTechHub</title>
+  <link rel="icon" type="image/png" href="images/logo.png" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="js/auth.js" defer></script>
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-container">
+      <a href="index.html" class="brand"><img src="images/logo.png" alt="FirstTechHub logo" /></a>
+      <nav class="site-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="courses.html">Courses</a>
+        <a href="admission-policy.html">Admission Policy</a>
+        <a href="testimonials.html">Testimonials</a>
+        <a href="blog.html">Blog</a>
+        <a href="login.html">Login</a>
+        <a href="signup-new.html" class="active">Sign Up</a>
+        <a href="contact.html" class="nav-cta">Contact</a>
+      </nav>
+      <button class="mobile-menu" aria-label="Open navigation">☰</button>
+    </div>
+  </header>
+
+  <main class="page-content">
+    <section class="page-hero contact-hero">
+      <div>
+        <span class="eyebrow">Join FirstTechHub</span>
+        <h1>Create your account</h1>
+        <p id="heroSubtitle">Sign up to access training resources, manage your courses, and connect with mentors.</p>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="signup-container">
+        <form id="signupForm" class="signup-form" autocomplete="off">
+          <h2 id="formTitle">Step 1: Basic Information</h2>
+          <p class="form-description" id="formDesc">Let's get started with your account details.</p>
+          <div class="form-progress" id="formProgress">
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill" style="width: 50%;"></div>
+            </div>
+            <p class="progress-text"><span id="progressStep">1</span> of 2</p>
+          </div>
+
+          <!-- STEP 1: Basic Information & Role Selection -->
+          <div id="step1" class="signup-step">
+            <!-- Section 1: Basic Information -->
+            <fieldset class="form-section">
+              <legend>📋 Your Information</legend>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="firstName">First Name *</label>
+                  <input id="firstName" name="firstName" type="text" required placeholder="John" />
+                </div>
+                <div class="form-group">
+                  <label for="lastName">Last Name *</label>
+                  <input id="lastName" name="lastName" type="text" required placeholder="Doe" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input id="email" name="email" type="email" required placeholder="you@example.com" />
+              </div>
+
+              <div class="form-group">
+                <label for="phone">Phone Number *</label>
+                <input id="phone" name="phone" type="tel" required placeholder="+1 (555) 123-4567" />
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="password">Password *</label>
+                  <input id="password" name="password" type="password" required placeholder="Create a secure password" />
+                </div>
+                <div class="form-group">
+                  <label for="confirmPassword">Confirm Password *</label>
+                  <input id="confirmPassword" name="confirmPassword" type="password" required placeholder="Confirm your password" />
+                </div>
+              </div>
+            </fieldset>
+
+            <!-- Section 2: Role Selection -->
+            <fieldset class="form-section">
+              <legend>👤 What's Your Role? *</legend>
+              <div class="role-selection">
+                <label class="role-card">
+                  <input type="radio" name="role" value="Student" required />
+                  <div class="role-icon">🎓</div>
+                  <div class="role-title">Student</div>
+                  <div class="role-desc">Learning tech skills</div>
+                </label>
+                <label class="role-card">
+                  <input type="radio" name="role" value="Learner" />
+                  <div class="role-icon">📚</div>
+                  <div class="role-title">Learner</div>
+                  <div class="role-desc">Professional development</div>
+                </label>
+                <label class="role-card">
+                  <input type="radio" name="role" value="Tutor" />
+                  <div class="role-icon">👨‍🏫</div>
+                  <div class="role-title">Tutor</div>
+                  <div class="role-desc">Teaching others</div>
+                </label>
+                <label class="role-card">
+                  <input type="radio" name="role" value="Parent" />
+                  <div class="role-icon">👨‍👩‍👧</div>
+                  <div class="role-title">Parent</div>
+                  <div class="role-desc">For your child</div>
+                </label>
+              </div>
+            </fieldset>
+
+            <div class="form-section">
+              <button type="button" class="button primary large" onclick="proceedToStep2()">Continue to Step 2</button>
+              <p id="step1Message" class="small-note"></p>
+              <p class="small-note">Already have an account? <a href="login.html">Login here</a>.</p>
+            </div>
+          </div>
+
+          <!-- STEP 2: Role-Specific Details -->
+          <div id="step2" class="signup-step" style="display: none;">
+            <!-- Section 3: Age / Category -->
+            <fieldset class="form-section">
+              <legend>🎂 Age or Category *</legend>
+              <div class="toggle-group">
+                <label class="toggle-label">
+                  <input type="radio" name="ageType" value="age" onchange="toggleAgeCategory()" checked />
+                  By Age
+                </label>
+                <label class="toggle-label">
+                  <input type="radio" name="ageType" value="category" onchange="toggleAgeCategory()" />
+                  By Category
+                </label>
+              </div>
+
+              <div id="ageInput" class="form-group">
+                <label for="age">Age *</label>
+                <input id="age" name="age" type="number" min="4" max="100" required placeholder="e.g., 18" />
+              </div>
+
+              <div id="categoryInput" class="form-group" style="display: none;">
+                <label for="category">Category *</label>
+                <select id="category" name="category">
+                  <option value="">Select a category</option>
+                  <option value="kids">Kids (4–12)</option>
+                  <option value="teens">Teens (13–18)</option>
+                  <option value="adults">Adults (18+)</option>
+                </select>
+              </div>
+            </fieldset>
+
+            <!-- Section 4: Learning Interests -->
+            <fieldset class="form-section">
+              <legend>🎯 Learning Interests (Select all that apply) *</legend>
+              <div class="checkbox-grid">
+                <label class="checkbox-label">
+                  <input type="checkbox" name="interests" value="Web Design & Development" />
+                  <span>Web Design & Development</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" name="interests" value="Artificial Intelligence (AI)" />
+                  <span>Artificial Intelligence (AI)</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" name="interests" value="Cybersecurity" />
+                  <span>Cybersecurity</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" name="interests" value="Game Development" />
+                  <span>Game Development</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" name="interests" value="Data Analysis" />
+                  <span>Data Analysis</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" name="interests" value="UI/UX Design" />
+                  <span>UI/UX Design</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" name="interests" value="Digital Literacy (for kids)" />
+                  <span>Digital Literacy (for kids)</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" name="interests" value="Robotics" />
+                  <span>Robotics 🔥</span>
+                </label>
+              </div>
+            </fieldset>
+
+            <!-- Section 5: Experience Level -->
+            <fieldset class="form-section">
+              <legend>📊 Experience Level *</legend>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="experience" value="Beginner" required />
+                  <span>Beginner</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="experience" value="Intermediate" />
+                  <span>Intermediate</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="experience" value="Advanced" />
+                  <span>Advanced</span>
+                </label>
+              </div>
+            </fieldset>
+
+            <!-- Section 6: Learning Goal -->
+            <fieldset class="form-section">
+              <legend>🎓 What's Your Learning Goal? *</legend>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="learningGoal" value="Just starting" required />
+                  <span>Just starting</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="learningGoal" value="Build a career in tech" />
+                  <span>Build a career in tech</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="learningGoal" value="Improve my skills" />
+                  <span>Improve my skills</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="learningGoal" value="Learn for fun" />
+                  <span>Learn for fun</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="learningGoal" value="Prepare for job/freelancing" />
+                  <span>Prepare for job/freelancing</span>
+                </label>
+              </div>
+            </fieldset>
+
+            <!-- Section 7: Location -->
+            <fieldset class="form-section">
+              <legend>📍 Location (Optional)</legend>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="country">Country</label>
+                  <select id="country" name="country" onchange="updateStates()">
+                    <option value="">Select a country</option>
+                    <option value="United States">United States</option>
+                    <option value="Canada">Canada</option>
+                    <option value="United Kingdom">United Kingdom</option>
+                    <option value="Australia">Australia</option>
+                    <option value="Nigeria">Nigeria</option>
+                    <option value="Ghana">Ghana</option>
+                    <option value="South Africa">South Africa</option>
+                    <option value="Kenya">Kenya</option>
+                    <option value="India">India</option>
+                    <option value="Pakistan">Pakistan</option>
+                    <option value="Singapore">Singapore</option>
+                    <option value="Philippines">Philippines</option>
+                    <option value="Germany">Germany</option>
+                    <option value="France">France</option>
+                    <option value="Spain">Spain</option>
+                    <option value="Italy">Italy</option>
+                    <option value="Brazil">Brazil</option>
+                    <option value="Mexico">Mexico</option>
+                    <option value="New Zealand">New Zealand</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="state">State / City</label>
+                  <select id="state" name="state">
+                    <option value="">Select a state/city</option>
+                  </select>
+                </div>
+              </div>
+            </fieldset>
+
+            <!-- Section 8: Student Conditional Fields -->
+            <fieldset id="studentFields" class="form-section">
+              <legend>📚 Student Details</legend>
+              <div class="form-group">
+                <label for="learningMode">Preferred Learning Mode *</label>
+                <select id="learningMode" name="learningMode">
+                  <option value="">Select mode</option>
+                  <option value="Online">Online</option>
+                  <option value="Physical">Physical</option>
+                  <option value="Hybrid">Hybrid</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="availability">Availability *</label>
+                <select id="availability" name="availability">
+                  <option value="">Select availability</option>
+                  <option value="Weekdays">Weekdays</option>
+                  <option value="Weekends">Weekends</option>
+                  <option value="Both">Both</option>
+                </select>
+              </div>
+            </fieldset>
+
+            <!-- Section 9: Parent Conditional Fields -->
+            <fieldset id="parentFields" class="form-section">
+              <legend>👨‍👩‍👧 Parent Information</legend>
+              <div class="form-group">
+                <label for="childName">Child's Name *</label>
+                <input id="childName" name="childName" type="text" placeholder="Your child's name" />
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="childAge">Child's Age *</label>
+                  <input id="childAge" name="childAge" type="number" min="4" max="18" placeholder="e.g., 10" />
+                </div>
+                <div class="form-group">
+                  <label for="parentPhone">Parent Phone Number *</label>
+                  <input id="parentPhone" name="parentPhone" type="tel" placeholder="+1 (555) 123-4567" />
+                </div>
+              </div>
+            </fieldset>
+
+            <!-- Section 10: Tutor Conditional Fields -->
+            <fieldset id="tutorFields" class="form-section">
+              <legend>👨‍🏫 Tutor Expertise</legend>
+              <div class="form-group">
+                <label for="expertise">Area of Expertise *</label>
+                <select id="expertise" name="expertise">
+                  <option value="">Select expertise area</option>
+                  <option value="Web Design & Development">Web Design & Development</option>
+                  <option value="Artificial Intelligence">Artificial Intelligence</option>
+                  <option value="Cybersecurity">Cybersecurity</option>
+                  <option value="Game Development">Game Development</option>
+                  <option value="Data Analysis">Data Analysis</option>
+                  <option value="UI/UX Design">UI/UX Design</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="yearsExp">Years of Experience *</label>
+                  <select id="yearsExp" name="yearsExp">
+                    <option value="">Select experience</option>
+                    <option value="Less than 1 year">Less than 1 year</option>
+                    <option value="1-2 years">1-2 years</option>
+                    <option value="3-5 years">3-5 years</option>
+                    <option value="5+ years">5+ years</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="portfolioUrl">Portfolio / LinkedIn URL</label>
+                  <input id="portfolioUrl" name="portfolioUrl" type="url" placeholder="https://linkedin.com/in/yourprofile" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="bio">Short Bio (Tell us about yourself) *</label>
+                <textarea id="bio" name="bio" rows="3" placeholder="Share your teaching experience and approach..."></textarea>
+              </div>
+            </fieldset>
+
+            <!-- Section 11: How did you hear about us -->
+            <fieldset class="form-section">
+              <legend>📢 How Did You Hear About Us? *</legend>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="source" value="Social media" required />
+                  <span>Social media</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="source" value="Friend" />
+                  <span>Friend</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="source" value="School" />
+                  <span>School</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="source" value="Advertisement" />
+                  <span>Advertisement</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="source" value="Other" />
+                  <span>Other</span>
+                </label>
+              </div>
+            </fieldset>
+
+            <!-- Section 12: Consent & Agreement -->
+            <fieldset class="form-section">
+              <legend>✅ Terms & Policies</legend>
+              <label class="checkbox-label">
+                <input type="checkbox" name="termsAccept" required />
+                <span>I accept the <a href="terms-conditions.html" target="_blank">Terms & Conditions</a> *</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="privacyAccept" required />
+                <span>I accept the <a href="privacy-policy.html" target="_blank">Privacy Policy</a> *</span>
+              </label>
+            </fieldset>
+
+            <!-- Submit Section -->
+            <div class="form-section">
+              <div style="display: flex; gap: 1rem;">
+                <button type="button" class="button secondary large" style="flex: 1;" onclick="backToStep1()">Back</button>
+                <button type="submit" class="button primary large" style="flex: 1;">Create Account</button>
+              </div>
+              <p id="step2Message" class="small-note"></p>
+            </div>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div>
+      <a href="index.html" class="brand footer-brand"><img src="images/logo.png" alt="FirstTechHub logo" /></a>
+      <p>Professional, inspiring, and tech-driven solutions for training and business growth.</p>
+    </div>
+    <div class="footer-links">
+      <a href="about.html">About</a>
+      <a href="services.html">Services</a>
+      <a href="contact.html">Contact</a>
+      <a href="login.html">Login</a>
+      <a href="signup-new.html">Sign Up</a>
+    </div>
+    <div class="footer-social">
+      <a href="#">LinkedIn</a>
+      <a href="#">Twitter</a>
+      <a href="https://wa.me/15551234567" target="_blank">WhatsApp</a>
+    </div>
+  </footer>
+
+  <script src="js/signup-flow.js" defer></script>
+</body>
+</html>

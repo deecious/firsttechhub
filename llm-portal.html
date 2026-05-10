@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LLM Portal | FirstTechHub</title>  <link rel="icon" type="image/png" href="images/logo.png" />  <link rel="stylesheet" href="css/style.css" />
+  <!-- Supabase Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/auth.js" defer></script>
+  <script src="js/main.js" defer></script>
+  <script src="js/supabase-config.js" defer></script>
+  <script src="js/portal.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-container">
+      <a href="index.html" class="brand"><img src="images/logo.png" alt="FirstTechHub logo" /></a>
+      <nav class="site-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="courses.html">Courses</a>
+        <a href="admission-policy.html">Admission Policy</a>
+        <a href="testimonials.html">Testimonials</a>
+        <a href="blog.html">Blog</a>
+        <a href="llm-portal.html" class="active">Portal</a>
+        <a href="contact.html" class="nav-cta">Contact</a>
+      </nav>
+      <button class="mobile-menu" aria-label="Open navigation">☰</button>
+    </div>
+  </header>
+
+  <main class="page-content portal-page">
+    <!-- Auth Gate - Show if not logged in -->
+    <section id="portalAuthGate" class="portal-auth-gate">
+      <div class="portal-auth-container">
+        <h2>Portal Access Required</h2>
+        <p>You must be logged in to access the portal. Please log in or create an account to continue.</p>
+        <div class="portal-auth-actions">
+          <a href="login.html" class="button primary">Login</a>
+          <a href="signup-new.html" class="button secondary">Sign Up</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Portal Content - Show if logged in -->
+    <div id="portalContent">
+      <section class="page-hero portal-hero">
+        <div>
+          <span class="eyebrow">LLM Portal</span>
+          <h1>Manage learning and assignments</h1>
+          <p id="roleGreeting">Welcome to FirstTechHub Portal</p>
+        </div>
+      </section>
+
+      <!-- Admin Dashboard -->
+      <section id="adminDashboard" class="content-section">
+        <div class="section-head">
+          <p class="eyebrow">Admin Controls</p>
+          <h2>Manage classes, tasks, and assignments</h2>
+        </div>
+
+        <div class="dashboard-grid">
+          <article class="dashboard-card">
+            <h3>Classes</h3>
+            <p id="countClasses">0</p>
+          </article>
+          <article class="dashboard-card">
+            <h3>Tasks</h3>
+            <p id="countTasks">0</p>
+          </article>
+          <article class="dashboard-card">
+            <h3>Assignments</h3>
+            <p id="countAssignments">0</p>
+          </article>
+        </div>
+
+        <div class="portal-grid">
+          <div class="portal-card">
+            <h2>Create Class</h2>
+            <form id="classForm" class="portal-form">
+              <label for="classTitle">Title</label>
+              <input id="classTitle" name="title" required />
+              <label for="classInstructor">Instructor</label>
+              <input id="classInstructor" name="instructor" required />
+              <label for="classSchedule">Schedule</label>
+              <input id="classSchedule" name="schedule" required placeholder="Mon/Wed 4pm" />
+              <button type="submit" class="button primary">Create Class</button>
+            </form>
+            <h3 style="margin-top: 1.5rem;">All Classes</h3>
+            <div id="classesList" class="portal-list"></div>
+          </div>
+
+          <div class="portal-card">
+            <h2>Create Task</h2>
+            <form id="taskForm" class="portal-form">
+              <label for="taskTitle">Task Title</label>
+              <input id="taskTitle" name="title" required />
+              <label for="taskStatus">Status</label>
+              <select id="taskStatus" name="status">
+                <option>Open</option>
+                <option>In Progress</option>
+                <option>Completed</option>
+              </select>
+              <button type="submit" class="button primary">Add Task</button>
+            </form>
+            <h3 style="margin-top: 1.5rem;">All Tasks</h3>
+            <div id="tasksList" class="portal-list"></div>
+          </div>
+
+          <div class="portal-card">
+            <h2>Create Assignment</h2>
+            <form id="assignmentForm" class="portal-form">
+              <label for="assignmentTitle">Title</label>
+              <input id="assignmentTitle" name="title" required />
+              <label for="assignmentClass">Class</label>
+              <select id="assignmentClass" name="classId" required></select>
+              <label for="assignmentDue">Due Date</label>
+              <input id="assignmentDue" name="dueDate" type="date" required />
+              <button type="submit" class="button primary">Add Assignment</button>
+            </form>
+            <h3 style="margin-top: 1.5rem;">All Assignments</h3>
+            <div id="assignmentsList" class="portal-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Learner Dashboard -->
+      <section id="learnerDashboard" class="content-section">
+        <div class="section-head">
+          <p class="eyebrow">Your Dashboard</p>
+          <h2>Your classes, tasks, and assignments</h2>
+        </div>
+
+        <div class="portal-grid">
+          <div class="portal-card">
+            <h2>My Classes</h2>
+            <div id="myClasses" class="portal-list"></div>
+          </div>
+
+          <div class="portal-card">
+            <h2>My Tasks</h2>
+            <div id="myTasks" class="portal-list"></div>
+          </div>
+
+          <div class="portal-card">
+            <h2>My Assignments</h2>
+            <div id="myAssignments" class="portal-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tutor Dashboard -->
+      <section id="tutorDashboard" class="content-section">
+        <div class="section-head">
+          <p class="eyebrow">Tutor Dashboard</p>
+          <h2>Manage your classes and students</h2>
+        </div>
+
+        <div class="portal-grid">
+          <div class="portal-card">
+            <h2>My Students</h2>
+            <div id="myStudents" class="portal-list"></div>
+          </div>
+
+          <div class="portal-card">
+            <h2>Enroll Student</h2>
+            <form id="enrollForm" class="portal-form">
+              <label for="enrollStudent">Student</label>
+              <select id="enrollStudent" name="studentId" required></select>
+              <label for="enrollClass">Class</label>
+              <select id="enrollClass" name="classId" required></select>
+              <button type="submit" class="button primary">Enroll</button>
+            </form>
+            <h3 style="margin-top: 1.5rem;">Enrollments</h3>
+            <div id="enrollmentsList" class="portal-list"></div>
+          </div>
+
+          <div class="portal-card">
+            <h2>Create Assignment</h2>
+            <form id="tutorAssignmentForm" class="portal-form">
+              <label for="tutorAssignmentTitle">Title</label>
+              <input id="tutorAssignmentTitle" name="title" required />
+              <label for="tutorAssignmentClass">Class</label>
+              <select id="tutorAssignmentClass" name="classId" required></select>
+              <label for="tutorAssignmentDue">Due Date</label>
+              <input id="tutorAssignmentDue" name="dueDate" type="date" required />
+              <button type="submit" class="button primary">Create</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <div class="portal-footer">
+        <p id="syncStatus" class="small-note">✓ Using local storage (development mode)</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div>
+      <a href="index.html" class="brand footer-brand">FirstTechHub</a>
+      <p>Professional, inspiring, and tech-driven solutions for training and business growth.</p>
+    </div>
+    <div class="footer-links">
+      <a href="about.html">About</a>
+      <a href="services.html">Services</a>
+      <a href="contact.html">Contact</a>
+      <a href="admin.html">Admin CMS</a>
+    </div>
+    <div class="footer-social">
+      <a href="#">LinkedIn</a>
+      <a href="#">Twitter</a>
+      <a href="https://wa.me/2349026770505" target="_blank">WhatsApp</a>
+    </div>
+  </footer>
+</body>
+</html>
