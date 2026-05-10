@@ -137,7 +137,8 @@ function showAuthMessage(container, message, type = 'info') {
 function ensureAuthLinks(nav) {
   const contactLink = nav.querySelector('a[href="contact.html"]');
   const loginLink = nav.querySelector('a[href="login.html"]');
-  const signupLink = nav.querySelector('a[href="signup.html"]');
+  const signupLink = nav.querySelector('a[href="signup-new.html"]');
+  const tutorSignupLink = nav.querySelector('a[href="tutor-signup.html"]');
 
   if (!loginLink) {
     const loginEl = document.createElement('a');
@@ -147,9 +148,15 @@ function ensureAuthLinks(nav) {
   }
   if (!signupLink) {
     const signupEl = document.createElement('a');
-    signupEl.href = 'signup.html';
+    signupEl.href = 'signup-new.html';
     signupEl.textContent = 'Sign Up';
     nav.insertBefore(signupEl, contactLink);
+  }
+  if (!tutorSignupLink) {
+    const tutorSignupEl = document.createElement('a');
+    tutorSignupEl.href = 'tutor-signup.html';
+    tutorSignupEl.textContent = 'Tutor Sign Up';
+    nav.insertBefore(tutorSignupEl, contactLink);
   }
 }
 
@@ -157,7 +164,8 @@ function updateAuthNavItems() {
   document.querySelectorAll('.site-nav').forEach((nav) => {
     const user = getSessionUser();
     const loginLink = nav.querySelector('a[href="login.html"]');
-    const signupLink = nav.querySelector('a[href="signup.html"]');
+    const signupLink = nav.querySelector('a[href="signup-new.html"]');
+    const tutorSignupLink = nav.querySelector('a[href="tutor-signup.html"]');
     const accountLink = nav.querySelector('a[href="account.html"]');
     const logoutLink = nav.querySelector('a[data-logout]');
     const contactLink = nav.querySelector('a[href="contact.html"]');
@@ -165,6 +173,7 @@ function updateAuthNavItems() {
     if (user) {
       if (loginLink) loginLink.remove();
       if (signupLink) signupLink.remove();
+      if (tutorSignupLink) tutorSignupLink.remove();
       if (!accountLink) {
         const accountEl = document.createElement('a');
         accountEl.href = 'account.html';

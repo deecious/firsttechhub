@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sign Up | FirstTechHub</title>
+  <title>Tutor Sign Up | FirstTechHub</title>
   <link rel="icon" type="image/png" href="images/logo.png" />
   <link rel="stylesheet" href="css/style.css" />
   <script src="js/auth.js" defer></script>
@@ -22,8 +22,7 @@
         <a href="testimonials.html">Testimonials</a>
         <a href="blog.html">Blog</a>
         <a href="login.html">Login</a>
-        <a href="signup.html" class="active">Sign Up</a>
-        <a href="tutor-signup.html">Tutor Sign Up</a>
+        <a href="tutor-signup.html" class="active">Tutor Sign Up</a>
         <a href="contact.html" class="nav-cta">Contact</a>
       </nav>
       <button class="mobile-menu" aria-label="Open navigation">☰</button>
@@ -34,15 +33,15 @@
     <section class="page-hero contact-hero">
       <div>
         <span class="eyebrow">Join FirstTechHub</span>
-        <h1>Create your student, learner, or tutor account.</h1>
-        <p>Sign up to access training resources, manage your courses, and connect with mentors.</p>
+        <h1>Create your tutor account.</h1>
+        <p>Sign up to mentor learners, showcase your expertise, and shape the next generation of tech creators.</p>
       </div>
     </section>
 
     <section class="content-section">
       <div class="signup-container">
         <form id="signupForm" class="signup-form" autocomplete="off">
-          <h2>Create Your Account</h2>
+          <h2>Tutor Registration</h2>
           <p class="form-description">Join FirstTechHub and unlock access to world-class tech training and mentorship.</p>
 
           <!-- Section 1: Basic Information -->
@@ -82,145 +81,91 @@
             </div>
           </fieldset>
 
-          <!-- Section 2: Role Selection -->
+          <!-- Section 2: Tutor Expertise -->
           <fieldset class="form-section">
-            <legend>👤 Select Your Role *</legend>
-            <div class="radio-group">
-              <label class="radio-label">
-                <input type="radio" name="role" value="Student" required onchange="toggleConditionalFields()" />
-                <span>Student</span>
-              </label>
-              <label class="radio-label">
-                <input type="radio" name="role" value="Learner" onchange="toggleConditionalFields()" />
-                <span>Learner</span>
-              </label>
-              <label class="radio-label">
-                <input type="radio" name="role" value="Tutor" onchange="toggleConditionalFields()" />
-                <span>Tutor</span>
-              </label>
-              <label class="radio-label">
-                <input type="radio" name="role" value="Parent" onchange="toggleConditionalFields()" />
-                <span>Parent</span>
-              </label>
-            </div>
-          </fieldset>
-
-          <!-- Section 3: Age / Category -->
-          <fieldset class="form-section">
-            <legend>🎂 Age or Category *</legend>
-            <div class="toggle-group">
-              <label class="toggle-label">
-                <input type="radio" name="ageType" value="age" onchange="toggleAgeCategory()" checked />
-                By Age
-              </label>
-              <label class="toggle-label">
-                <input type="radio" name="ageType" value="category" onchange="toggleAgeCategory()" />
-                By Category
-              </label>
-            </div>
-
-            <div id="ageInput" class="form-group">
-              <label for="age">Age *</label>
-              <input id="age" name="age" type="number" min="4" max="100" required placeholder="e.g., 18" />
-            </div>
-
-            <div id="categoryInput" class="form-group" style="display: none;">
-              <label for="category">Category *</label>
-              <select id="category" name="category">
-                <option value="">Select a category</option>
-                <option value="kids">Kids (4–12)</option>
-                <option value="teens">Teens (13–18)</option>
-                <option value="adults">Adults (18+)</option>
+            <legend>👨‍🏫 Tutor Expertise *</legend>
+            <div class="form-group">
+              <label for="expertise">Area of Expertise *</label>
+              <select id="expertise" name="expertise" required>
+                <option value="">Select expertise area</option>
+                <option value="Web Design & Development">Web Design & Development</option>
+                <option value="Artificial Intelligence">Artificial Intelligence</option>
+                <option value="Cybersecurity">Cybersecurity</option>
+                <option value="Game Development">Game Development</option>
+                <option value="Data Analysis">Data Analysis</option>
+                <option value="UI/UX Design">UI/UX Design</option>
+                <option value="Digital Literacy">Digital Literacy</option>
+                <option value="Robotics">Robotics</option>
+                <option value="Other">Other</option>
               </select>
             </div>
-          </fieldset>
-
-          <!-- Section 4: Learning Interests -->
-          <fieldset class="form-section">
-            <legend>🎯 Learning Interests (Select all that apply) *</legend>
-            <div class="checkbox-grid">
-              <label class="checkbox-label">
-                <input type="checkbox" name="interests" value="Web Design & Development" />
-                <span>Web Design & Development</span>
-              </label>
-              <label class="checkbox-label">
-                <input type="checkbox" name="interests" value="Artificial Intelligence (AI)" />
-                <span>Artificial Intelligence (AI)</span>
-              </label>
-              <label class="checkbox-label">
-                <input type="checkbox" name="interests" value="Cybersecurity" />
-                <span>Cybersecurity</span>
-              </label>
-              <label class="checkbox-label">
-                <input type="checkbox" name="interests" value="Game Development" />
-                <span>Game Development</span>
-              </label>
-              <label class="checkbox-label">
-                <input type="checkbox" name="interests" value="Data Analysis" />
-                <span>Data Analysis</span>
-              </label>
-              <label class="checkbox-label">
-                <input type="checkbox" name="interests" value="UI/UX Design" />
-                <span>UI/UX Design</span>
-              </label>
-              <label class="checkbox-label">
-                <input type="checkbox" name="interests" value="Digital Literacy (for kids)" />
-                <span>Digital Literacy (for kids)</span>
-              </label>
-              <label class="checkbox-label">
-                <input type="checkbox" name="interests" value="Robotics" />
-                <span>Robotics 🔥</span>
-              </label>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="yearsExp">Years of Experience *</label>
+                <select id="yearsExp" name="yearsExp" required>
+                  <option value="">Select experience level</option>
+                  <option value="Less than 1 year">Less than 1 year</option>
+                  <option value="1-2 years">1-2 years</option>
+                  <option value="3-5 years">3-5 years</option>
+                  <option value="5+ years">5+ years</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="portfolioUrl">Portfolio / LinkedIn URL</label>
+                <input id="portfolioUrl" name="portfolioUrl" type="url" placeholder="https://linkedin.com/in/yourprofile" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="bio">Short Bio (Tell us about yourself) *</label>
+              <textarea id="bio" name="bio" rows="3" required placeholder="Share your teaching experience and approach..."></textarea>
             </div>
           </fieldset>
 
-          <!-- Section 5: Experience Level -->
+          <!-- Section 3: Teaching Preferences -->
           <fieldset class="form-section">
-            <legend>📊 Experience Level *</legend>
-            <div class="radio-group">
-              <label class="radio-label">
-                <input type="radio" name="experience" value="Beginner" required />
-                <span>Beginner</span>
-              </label>
-              <label class="radio-label">
-                <input type="radio" name="experience" value="Intermediate" />
-                <span>Intermediate</span>
-              </label>
-              <label class="radio-label">
-                <input type="radio" name="experience" value="Advanced" />
-                <span>Advanced</span>
-              </label>
+            <legend>🎓 Teaching Preferences</legend>
+            <div class="form-group">
+              <label for="learningMode">Preferred Teaching Mode *</label>
+              <select id="learningMode" name="learningMode" required>
+                <option value="">Select mode</option>
+                <option value="Online">Online</option>
+                <option value="Physical">Physical</option>
+                <option value="Hybrid">Hybrid</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="availability">Availability *</label>
+              <select id="availability" name="availability" required>
+                <option value="">Select availability</option>
+                <option value="Weekdays">Weekdays</option>
+                <option value="Weekends">Weekends</option>
+                <option value="Both">Both</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Age Groups You Can Teach (Select all that apply) *</label>
+              <div class="checkbox-grid">
+                <label class="checkbox-label">
+                  <input type="checkbox" name="ageGroups" value="4-7" />
+                  <span>Ages 4-7</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" name="ageGroups" value="8-11" />
+                  <span>Ages 8-11</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" name="ageGroups" value="12-15" />
+                  <span>Ages 12-15</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" name="ageGroups" value="16+" />
+                  <span>Ages 16+</span>
+                </label>
+              </div>
             </div>
           </fieldset>
 
-          <!-- Section 6: Learning Goal -->
-          <fieldset class="form-section">
-            <legend>🎓 What's Your Learning Goal? *</legend>
-            <div class="radio-group">
-              <label class="radio-label">
-                <input type="radio" name="learningGoal" value="Just starting" required />
-                <span>Just starting</span>
-              </label>
-              <label class="radio-label">
-                <input type="radio" name="learningGoal" value="Build a career in tech" />
-                <span>Build a career in tech</span>
-              </label>
-              <label class="radio-label">
-                <input type="radio" name="learningGoal" value="Improve my skills" />
-                <span>Improve my skills</span>
-              </label>
-              <label class="radio-label">
-                <input type="radio" name="learningGoal" value="Learn for fun" />
-                <span>Learn for fun</span>
-              </label>
-              <label class="radio-label">
-                <input type="radio" name="learningGoal" value="Prepare for job/freelancing" />
-                <span>Prepare for job/freelancing</span>
-              </label>
-            </div>
-          </fieldset>
-
-          <!-- Section 7: Location -->
+          <!-- Section 4: Location -->
           <fieldset class="form-section">
             <legend>📍 Location (Optional)</legend>
             <div class="form-row">
@@ -259,114 +204,7 @@
             </div>
           </fieldset>
 
-          <!-- Section 8: Student Conditional Fields -->
-          <fieldset id="studentFields" class="form-section">
-            <legend>📚 Student Details</legend>
-            <div class="form-group">
-              <label for="learningMode">Preferred Learning Mode *</label>
-              <select id="learningMode" name="learningMode">
-                <option value="">Select mode</option>
-                <option value="Online">Online</option>
-                <option value="Physical">Physical</option>
-                <option value="Hybrid">Hybrid</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="availability">Availability *</label>
-              <select id="availability" name="availability">
-                <option value="">Select availability</option>
-                <option value="Weekdays">Weekdays</option>
-                <option value="Weekends">Weekends</option>
-                <option value="Both">Both</option>
-              </select>
-            </div>
-          </fieldset>
-
-          <!-- Section 9: Parent Conditional Fields -->
-          <fieldset id="parentFields" class="form-section">
-            <legend>👨‍👩‍👧 Parent Information</legend>
-            <div class="form-group">
-              <label for="childName">Child's Name *</label>
-              <input id="childName" name="childName" type="text" placeholder="Your child's name" />
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="childAge">Child's Age *</label>
-                <input id="childAge" name="childAge" type="number" min="4" max="18" placeholder="e.g., 10" />
-              </div>
-              <div class="form-group">
-                <label for="parentPhone">Parent Phone Number *</label>
-                <input id="parentPhone" name="parentPhone" type="tel" placeholder="+1 (555) 123-4567" />
-              </div>
-            </div>
-          </fieldset>
-
-          <!-- Section 10: Tutor Conditional Fields -->
-          <fieldset id="tutorFields" class="form-section">
-            <legend>👨‍🏫 Tutor Expertise</legend>
-            <div class="form-group">
-              <label for="expertise">Area of Expertise *</label>
-              <select id="expertise" name="expertise">
-                <option value="">Select expertise area</option>
-                <option value="Web Design & Development">Web Design & Development</option>
-                <option value="Artificial Intelligence">Artificial Intelligence</option>
-                <option value="Cybersecurity">Cybersecurity</option>
-                <option value="Game Development">Game Development</option>
-                <option value="Data Analysis">Data Analysis</option>
-                <option value="UI/UX Design">UI/UX Design</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="yearsExp">Years of Experience *</label>
-                <select id="yearsExp" name="yearsExp">
-                  <option value="">Select experience</option>
-                  <option value="Less than 1 year">Less than 1 year</option>
-                  <option value="1-2 years">1-2 years</option>
-                  <option value="3-5 years">3-5 years</option>
-                  <option value="5+ years">5+ years</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="portfolioUrl">Portfolio / LinkedIn URL</label>
-                <input id="portfolioUrl" name="portfolioUrl" type="url" placeholder="https://linkedin.com/in/yourprofile" />
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="bio">Short Bio (Tell us about yourself) *</label>
-              <textarea id="bio" name="bio" rows="3" placeholder="Share your teaching experience and approach..."></textarea>
-            </div>
-          </fieldset>
-
-          <!-- Section 11: How did you hear about us -->
-          <fieldset class="form-section">
-            <legend>📢 How Did You Hear About Us? *</legend>
-            <div class="radio-group">
-              <label class="radio-label">
-                <input type="radio" name="source" value="Social media" required />
-                <span>Social media</span>
-              </label>
-              <label class="radio-label">
-                <input type="radio" name="source" value="Friend" />
-                <span>Friend</span>
-              </label>
-              <label class="radio-label">
-                <input type="radio" name="source" value="School" />
-                <span>School</span>
-              </label>
-              <label class="radio-label">
-                <input type="radio" name="source" value="Advertisement" />
-                <span>Advertisement</span>
-              </label>
-              <label class="radio-label">
-                <input type="radio" name="source" value="Other" />
-                <span>Other</span>
-              </label>
-            </div>
-          </fieldset>
-
-          <!-- Section 12: Consent & Agreement -->
+          <!-- Section 5: Consent & Agreement -->
           <fieldset class="form-section">
             <legend>✅ Terms & Policies</legend>
             <label class="checkbox-label">
@@ -381,7 +219,7 @@
 
           <!-- Submit Section -->
           <div class="form-section">
-            <button type="submit" class="button primary large">Start Learning Today</button>
+            <button type="submit" class="button primary large">Create Tutor Account</button>
             <p id="signupMessage" class="small-note"></p>
             <p class="small-note">Already have an account? <a href="login.html">Login here</a>.</p>
           </div>
@@ -400,7 +238,7 @@
       <a href="services.html">Services</a>
       <a href="contact.html">Contact</a>
       <a href="login.html">Login</a>
-      <a href="signup.html">Sign Up</a>
+      <a href="signup-new.html">Sign Up</a>
       <a href="tutor-signup.html">Tutor Sign Up</a>
     </div>
     <div class="footer-social">
@@ -434,7 +272,6 @@
       'New Zealand': ['Auckland', 'Bay of Plenty', 'Canterbury', 'Gisborne', 'Hawke\'s Bay', 'Manawatū', 'Marlborough', 'Nelson', 'Northland', 'Otago', 'Southland', 'Taranaki', 'Tasman', 'Waikato', 'Wairarapa', 'Wellington', 'West Coast']
     };
 
-    // Update states dropdown based on selected country
     function updateStates() {
       const country = document.getElementById('country').value;
       const stateSelect = document.getElementById('state');
@@ -450,25 +287,11 @@
       }
     }
 
-    // Toggle conditional fields based on role selection (all visible)
-    function toggleConditionalFields() {
-      // All sections now visible - no hiding needed
-    }
-
-    // Toggle between Age and Category inputs
-    function toggleAgeCategory() {
-      const ageType = document.querySelector('input[name="ageType"]:checked').value;
-      document.getElementById('ageInput').style.display = ageType === 'age' ? 'block' : 'none';
-      document.getElementById('categoryInput').style.display = ageType === 'category' ? 'block' : 'none';
-    }
-
-    // Form submission handler
     document.getElementById('signupForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const messageEl = document.getElementById('signupMessage');
 
       try {
-        // Get form data
         const formData = new FormData(document.getElementById('signupForm'));
         const firstName = formData.get('firstName');
         const lastName = formData.get('lastName');
@@ -477,10 +300,8 @@
         const phone = formData.get('phone');
         const password = formData.get('password');
         const confirmPassword = formData.get('confirmPassword');
-        const role = formData.get('role');
 
-        // Basic validation
-        if (!firstName || !lastName || !email || !phone || !password || !confirmPassword || !role) {
+        if (!firstName || !lastName || !email || !phone || !password || !confirmPassword) {
           messageEl.textContent = '❌ Please fill in all required fields.';
           messageEl.style.color = 'var(--error, #e74c3c)';
           return;
@@ -498,16 +319,14 @@
           return;
         }
 
-        // Collect learning interests
-        const interests = Array.from(document.querySelectorAll('input[name="interests"]:checked'))
+        const ageGroups = Array.from(document.querySelectorAll('input[name="ageGroups"]:checked'))
           .map(cb => cb.value);
-        if (interests.length === 0) {
-          messageEl.textContent = '❌ Please select at least one learning interest.';
+        if (ageGroups.length === 0) {
+          messageEl.textContent = '❌ Please select at least one age group you can teach.';
           messageEl.style.color = 'var(--error, #e74c3c)';
           return;
         }
 
-        // Create user profile with all data
         const userProfile = {
           name,
           firstName,
@@ -515,39 +334,22 @@
           email,
           phone,
           password,
-          role,
-          age: formData.get('age'),
-          category: formData.get('category'),
-          interests,
-          experience: formData.get('experience'),
-          learningGoal: formData.get('learningGoal'),
+          role: 'Tutor',
+          expertise: formData.get('expertise'),
+          yearsExp: formData.get('yearsExp'),
+          portfolioUrl: formData.get('portfolioUrl'),
+          bio: formData.get('bio'),
+          learningMode: formData.get('learningMode'),
+          availability: formData.get('availability'),
+          ageGroups,
           country: formData.get('country'),
           state: formData.get('state'),
-          source: formData.get('source'),
           createdAt: new Date().toISOString()
         };
 
-        // Add conditional fields
-        if (role === 'Student') {
-          userProfile.learningMode = formData.get('learningMode');
-          userProfile.availability = formData.get('availability');
-        }
-        if (role === 'Parent') {
-          userProfile.childName = formData.get('childName');
-          userProfile.childAge = formData.get('childAge');
-          userProfile.parentPhone = formData.get('parentPhone');
-        }
-        if (role === 'Tutor') {
-          userProfile.expertise = formData.get('expertise');
-          userProfile.yearsExp = formData.get('yearsExp');
-          userProfile.portfolioUrl = formData.get('portfolioUrl');
-          userProfile.bio = formData.get('bio');
-        }
-
-        // Call registerUser from auth.js
-        registerUser(email, password, name, role, userProfile);
+        registerUser(email, password, name, 'Tutor', userProfile);
         
-        messageEl.textContent = '✅ Account created successfully! Redirecting to login...';
+        messageEl.textContent = '✅ Tutor account created successfully! Redirecting to login...';
         messageEl.style.color = 'var(--accent, #27ae60)';
         
         setTimeout(() => {
@@ -558,12 +360,6 @@
         messageEl.textContent = `❌ Error: ${error.message}`;
         messageEl.style.color = 'var(--error, #e74c3c)';
       }
-    });
-
-    // Initialize visibility on page load
-    document.addEventListener('DOMContentLoaded', () => {
-      toggleConditionalFields();
-      toggleAgeCategory();
     });
   </script>
 </body>
