@@ -3,6 +3,15 @@ const FTBHUB_AUTH_SESSION_KEY = 'ftbAuthSession';
 
 const defaultAuthUsers = [
   {
+    id: 'admin-demo',
+    name: 'Admin User',
+    email: 'admin@firsttechhub.com',
+    password: 'Admin123',
+    role: 'Admin',
+    bio: 'Super admin with full access to the system.',
+    createdAt: '2026-05-06'
+  },
+  {
     id: 'student-demo',
     name: 'Jordan Blake',
     email: 'student@firsttechhub.com',

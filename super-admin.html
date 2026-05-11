@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Super Admin Dashboard | FirstTechHub</title>
+  <link rel="icon" type="image/png" href="images/logo.png" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="js/auth.js" defer></script>
+  <script src="js/main.js" defer></script>
+  <style>
+    .admin-dashboard {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 20px;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .admin-sidebar {
+      background: var(--surface, #f5f5f5);
+      border-radius: 8px;
+      padding: 20px;
+      height: fit-content;
+      position: sticky;
+      top: 20px;
+    }
+
+    .admin-sidebar h3 {
+      margin: 0 0 15px 0;
+      font-size: 14px;
+      text-transform: uppercase;
+      color: var(--text-secondary, #666);
+    }
+
+    .admin-sidebar button {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: white;
+      border: 1px solid var(--border, #ddd);
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: left;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .admin-sidebar button:hover {
+      background: var(--primary, #4CAF50);
+      color: white;
+      border-color: var(--primary, #4CAF50);
+    }
+
+    .admin-sidebar button.active {
+      background: var(--primary, #4CAF50);
+      color: white;
+      border-color: var(--primary, #4CAF50);
+    }
+
+    .admin-content {
+      background: white;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .admin-section {
+      display: none;
+    }
+
+    .admin-section.active {
+      display: block;
+    }
+
+    .admin-section h2 {
+      margin-top: 0;
+      color: var(--text, #333);
+      border-bottom: 2px solid var(--primary, #4CAF50);
+      padding-bottom: 15px;
+    }
+
+    .user-table, .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+
+    .user-table th, .data-table th {
+      background: var(--surface, #f5f5f5);
+      padding: 12px;
+      text-align: left;
+      font-weight: 600;
+      border-bottom: 2px solid var(--border, #ddd);
+    }
+
+    .user-table td, .data-table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border, #ddd);
+    }
+
+    .user-table tr:hover, .data-table tr:hover {
+      background: var(--surface, #f9f9f9);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .action-buttons button {
+      padding: 6px 12px;
+      font-size: 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn-edit {
+      background: #2196F3;
+      color: white;
+    }
+
+    .btn-edit:hover {
+      background: #1976D2;
+    }
+
+    .btn-delete {
+      background: #f44336;
+      color: white;
+    }
+
+    .btn-delete:hover {
+      background: #da190b;
+    }
+
+    .btn-resolve {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .btn-resolve:hover {
+      background: #388E3C;
+    }
+
+    .btn-small {
+      padding: 4px 8px;
+      font-size: 11px;
+    }
+
+    .form-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .form-modal.active {
+      display: flex;
+    }
+
+    .form-modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .form-modal-content h3 {
+      margin-top: 0;
+    }
+
+    .form-modal-content label {
+      display: block;
+      margin: 15px 0 5px 0;
+      font-weight: 500;
+    }
+
+    .form-modal-content input,
+    .form-modal-content select,
+    .form-modal-content textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border, #ddd);
+      border-radius: 4px;
+      margin-bottom: 15px;
+      font-family: inherit;
+    }
+
+    .form-modal-content textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    .modal-actions button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .btn-save {
+      background: var(--primary, #4CAF50);
+      color: white;
+    }
+
+    .btn-save:hover {
+      background: #388E3C;
+    }
+
+    .btn-cancel {
+      background: var(--border, #ddd);
+      color: var(--text, #333);
+    }
+
+    .btn-cancel:hover {
+      background: #ccc;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, var(--primary, #4CAF50), #45a049);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .stat-card h4 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .stat-card .number {
+      font-size: 32px;
+      font-weight: bold;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-secondary, #666);
+    }
+
+    .empty-state p {
+      margin: 10px 0;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .status-resolved {
+      background: #C8E6C9;
+      color: #2E7D32;
+    }
+
+    .status-pending {
+      background: #FFE0B2;
+      color: #E65100;
+    }
+
+    .status-active {
+      background: #C8E6C9;
+      color: #2E7D32;
+    }
+
+    .status-inactive {
+      background: #FFCDD2;
+      color: #C62828;
+    }
+
+    @media (max-width: 768px) {
+      .admin-dashboard {
+        grid-template-columns: 1fr;
+      }
+
+      .admin-sidebar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 10px;
+        position: static;
+        height: auto;
+      }
+
+      .admin-sidebar h3 {
+        grid-column: 1 / -1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-container">
+      <a href="index.html" class="brand"><img src="images/logo.png" alt="FirstTechHub logo" /></a>
+      <nav class="site-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+        <a href="#" data-logout class="nav-cta">Logout</a>
+      </nav>
+      <button class="mobile-menu" aria-label="Open navigation">☰</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="admin-dashboard">
+      <aside class="admin-sidebar">
+        <h3>Dashboard</h3>
+        <button class="sidebar-btn active" data-section="overview">📊 Overview</button>
+        <button class="sidebar-btn" data-section="users">👥 Users</button>
+        <button class="sidebar-btn" data-section="students">🎓 Students</button>
+        <button class="sidebar-btn" data-section="classes">📚 Classes</button>
+        <button class="sidebar-btn" data-section="assignments">✏️ Assignments</button>
+        <button class="sidebar-btn" data-section="complaints">⚠️ Complaints</button>
+        <button class="sidebar-btn" data-section="admin-access">🔐 Admin Access</button>
+      </aside>
+
+      <div class="admin-content">
+        <!-- Overview Section -->
+        <section class="admin-section active" id="overview">
+          <h2>Dashboard Overview</h2>
+          <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+              <h4>Total Users</h4>
+              <div class="number" id="totalUsersCount">0</div>
+            </div>
+            <div class="stat-card">
+              <h4>Total Students</h4>
+              <div class="number" id="totalStudentsCount">0</div>
+            </div>
+            <div class="stat-card">
+              <h4>Total Classes</h4>
+              <div class="number" id="totalClassesCount">0</div>
+            </div>
+            <div class="stat-card">
+              <h4>Pending Complaints</h4>
+              <div class="number" id="pendingComplaintsCount">0</div>
+            </div>
+          </div>
+          <div id="overviewContent"></div>
+        </section>
+
+        <!-- Users Management -->
+        <section class="admin-section" id="users">
+          <h2>User Management</h2>
+          <button class="button primary" id="addUserBtn">+ Add New User</button>
+          <table class="user-table" id="usersTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody"></tbody>
+          </table>
+          <div id="usersEmpty" class="empty-state" style="display: none;">
+            <p>No users found</p>
+          </div>
+        </section>
+
+        <!-- Students View -->
+        <section class="admin-section" id="students">
+          <h2>All Students</h2>
+          <table class="data-table" id="studentsTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Age</th>
+                <th>Status</th>
+                <th>Joined</th>
+              </tr>
+            </thead>
+            <tbody id="studentsTableBody"></tbody>
+          </table>
+          <div id="studentsEmpty" class="empty-state" style="display: none;">
+            <p>No students found</p>
+          </div>
+        </section>
+
+        <!-- Classes Management -->
+        <section class="admin-section" id="classes">
+          <h2>Classes</h2>
+          <button class="button primary" id="addClassBtn">+ Add New Class</button>
+          <table class="data-table" id="classesTable">
+            <thead>
+              <tr>
+                <th>Class Name</th>
+                <th>Instructor</th>
+                <th>Students</th>
+                <th>Status</th>
+                <th>Schedule</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="classesTableBody"></tbody>
+          </table>
+          <div id="classesEmpty" class="empty-state" style="display: none;">
+            <p>No classes found</p>
+          </div>
+        </section>
+
+        <!-- Assignments Management -->
+        <section class="admin-section" id="assignments">
+          <h2>Assignments</h2>
+          <button class="button primary" id="addAssignmentBtn">+ Add New Assignment</button>
+          <table class="data-table" id="assignmentsTable">
+            <thead>
+              <tr>
+                <th>Assignment</th>
+                <th>Class</th>
+                <th>Due Date</th>
+                <th>Submissions</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="assignmentsTableBody"></tbody>
+          </table>
+          <div id="assignmentsEmpty" class="empty-state" style="display: none;">
+            <p>No assignments found</p>
+          </div>
+        </section>
+
+        <!-- Complaints Resolution -->
+        <section class="admin-section" id="complaints">
+          <h2>User Complaints</h2>
+          <table class="data-table" id="complaintsTable">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Complaint</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="complaintsTableBody"></tbody>
+          </table>
+          <div id="complaintsEmpty" class="empty-state" style="display: none;">
+            <p>No complaints found</p>
+          </div>
+        </section>
+
+        <!-- Admin Access Log -->
+        <section class="admin-section" id="admin-access">
+          <h2>Admin Access Log</h2>
+          <table class="data-table" id="auditTable">
+            <thead>
+              <tr>
+                <th>Admin</th>
+                <th>Action</th>
+                <th>Timestamp</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody id="auditTableBody"></tbody>
+          </table>
+          <div id="auditEmpty" class="empty-state" style="display: none;">
+            <p>No audit logs found</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <!-- User Form Modal -->
+  <div class="form-modal" id="userModal">
+    <div class="form-modal-content">
+      <h3 id="userModalTitle">Add New User</h3>
+      <form id="userForm">
+        <label for="userName">Name *</label>
+        <input id="userName" name="name" type="text" required />
+
+        <label for="userEmail">Email *</label>
+        <input id="userEmail" name="email" type="email" required />
+
+        <label for="userPassword">Password *</label>
+        <input id="userPassword" name="password" type="password" required />
+
+        <label for="userRole">Role *</label>
+        <select id="userRole" name="role" required>
+          <option value="Student">Student</option>
+          <option value="Tutor">Tutor</option>
+          <option value="Parent">Parent</option>
+          <option value="Admin">Admin</option>
+        </select>
+
+        <label for="userBio">Bio</label>
+        <textarea id="userBio" name="bio"></textarea>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeUserModal()">Cancel</button>
+          <button type="submit" class="btn-save">Save User</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Class Form Modal -->
+  <div class="form-modal" id="classModal">
+    <div class="form-modal-content">
+      <h3 id="classModalTitle">Add New Class</h3>
+      <form id="classForm">
+        <label for="className">Class Name *</label>
+        <input id="className" name="name" type="text" required />
+
+        <label for="classInstructor">Instructor *</label>
+        <input id="classInstructor" name="instructor" type="text" required />
+
+        <label for="classSchedule">Schedule *</label>
+        <input id="classSchedule" name="schedule" type="text" placeholder="e.g., Mon & Wed, 3-4 PM" required />
+
+        <label for="classStatus">Status *</label>
+        <select id="classStatus" name="status" required>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+          <option value="Completed">Completed</option>
+        </select>
+
+        <label for="classDescription">Description</label>
+        <textarea id="classDescription" name="description"></textarea>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeClassModal()">Cancel</button>
+          <button type="submit" class="btn-save">Save Class</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Assignment Form Modal -->
+  <div class="form-modal" id="assignmentModal">
+    <div class="form-modal-content">
+      <h3 id="assignmentModalTitle">Add New Assignment</h3>
+      <form id="assignmentForm">
+        <label for="assignmentTitle">Title *</label>
+        <input id="assignmentTitle" name="title" type="text" required />
+
+        <label for="assignmentClass">Class *</label>
+        <select id="assignmentClass" name="classId" required></select>
+
+        <label for="assignmentDueDate">Due Date *</label>
+        <input id="assignmentDueDate" name="dueDate" type="date" required />
+
+        <label for="assignmentDescription">Description</label>
+        <textarea id="assignmentDescription" name="description"></textarea>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeAssignmentModal()">Cancel</button>
+          <button type="submit" class="btn-save">Save Assignment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Complaint Resolution Modal -->
+  <div class="form-modal" id="complaintModal">
+    <div class="form-modal-content">
+      <h3 id="complaintModalTitle">Resolve Complaint</h3>
+      <form id="complaintForm">
+        <label for="complaintResolution">Resolution *</label>
+        <textarea id="complaintResolution" name="resolution" required placeholder="Enter your resolution for this complaint"></textarea>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeComplaintModal()">Cancel</button>
+          <button type="submit" class="btn-save">Mark as Resolved</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Data storage keys
+    const STUDENTS_KEY = 'ftbStudents';
+    const CLASSES_KEY = 'ftbClasses';
+    const ASSIGNMENTS_KEY = 'ftbAssignments';
+    const COMPLAINTS_KEY = 'ftbComplaints';
+    const AUDIT_LOG_KEY = 'ftbAuditLog';
+
+    // Current editing context
+    let currentEditingId = null;
+    let currentEditingType = null;
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', () => {
+      const user = getSessionUser();
+      if (!user || user.role !== 'Admin') {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      initSidebar();
+      loadAllData();
+      setupFormHandlers();
+      renderOverview();
+    });
+
+    function initSidebar() {
+      document.querySelectorAll('.sidebar-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const section = btn.getAttribute('data-section');
+          showSection(section);
+        });
+      });
+    }
+
+    function showSection(sectionId) {
+      document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+      document.getElementById(sectionId).classList.add('active');
+      
+      switch(sectionId) {
+        case 'users': renderUsers(); break;
+        case 'students': renderStudents(); break;
+        case 'classes': renderClasses(); break;
+        case 'assignments': renderAssignments(); break;
+        case 'complaints': renderComplaints(); break;
+        case 'admin-access': renderAuditLog(); break;
+      }
+    }
+
+    // Data getters
+    function getStudents() {
+      try {
+        return JSON.parse(localStorage.getItem(STUDENTS_KEY)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveStudents(data) {
+      localStorage.setItem(STUDENTS_KEY, JSON.stringify(data));
+      logAction('Modified', 'Students', `Updated ${data.length} student records`);
+    }
+
+    function getClasses() {
+      try {
+        return JSON.parse(localStorage.getItem(CLASSES_KEY)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveClasses(data) {
+      localStorage.setItem(CLASSES_KEY, JSON.stringify(data));
+      logAction('Modified', 'Classes', `Updated ${data.length} class records`);
+    }
+
+    function getAssignments() {
+      try {
+        return JSON.parse(localStorage.getItem(ASSIGNMENTS_KEY)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveAssignments(data) {
+      localStorage.setItem(ASSIGNMENTS_KEY, JSON.stringify(data));
+      logAction('Modified', 'Assignments', `Updated ${data.length} assignment records`);
+    }
+
+    function getComplaints() {
+      try {
+        return JSON.parse(localStorage.getItem(COMPLAINTS_KEY)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveComplaints(data) {
+      localStorage.setItem(COMPLAINTS_KEY, JSON.stringify(data));
+      logAction('Modified', 'Complaints', `Updated ${data.length} complaint records`);
+    }
+
+    function getAuditLog() {
+      try {
+        return JSON.parse(localStorage.getItem(AUDIT_LOG_KEY)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function logAction(action, resource, details) {
+      const user = getSessionUser();
+      const log = {
+        admin: user.name,
+        action,
+        resource,
+        details,
+        timestamp: new Date().toISOString()
+      };
+      const logs = getAuditLog();
+      logs.unshift(log);
+      localStorage.setItem(AUDIT_LOG_KEY, JSON.stringify(logs));
+    }
+
+    // Render functions
+    function renderOverview() {
+      const users = getAuthUsers();
+      const students = getStudents();
+      const classes = getClasses();
+      const complaints = getComplaints().filter(c => c.status === 'Pending');
+
+      document.getElementById('totalUsersCount').textContent = users.length;
+      document.getElementById('totalStudentsCount').textContent = students.length;
+      document.getElementById('totalClassesCount').textContent = classes.length;
+      document.getElementById('pendingComplaintsCount').textContent = complaints.length;
+    }
+
+    function renderUsers() {
+      const users = getAuthUsers();
+      const tbody = document.getElementById('usersTableBody');
+      const empty = document.getElementById('usersEmpty');
+
+      tbody.innerHTML = '';
+      if (users.length === 0) {
+        empty.style.display = 'block';
+        document.getElementById('usersTable').style.display = 'none';
+        return;
+      }
+
+      empty.style.display = 'none';
+      document.getElementById('usersTable').style.display = 'table';
+
+      users.forEach(user => {
+        const row = tbody.insertRow();
+        row.innerHTML = `
+          <td>${user.name}</td>
+          <td>${user.email}</td>
+          <td><span class="status-badge status-active">${user.role}</span></td>
+          <td>${new Date(user.createdAt).toLocaleDateString()}</td>
+          <td>
+            <div class="action-buttons">
+              <button class="action-buttons button btn-edit btn-small" onclick="editUser('${user.id}')">Edit</button>
+              <button class="action-buttons button btn-delete btn-small" onclick="deleteUser('${user.id}')">Delete</button>
+            </div>
+          </td>
+        `;
+      });
+    }
+
+    function renderStudents() {
+      const users = getAuthUsers().filter(u => u.role === 'Student');
+      const tbody = document.getElementById('studentsTableBody');
+      const empty = document.getElementById('studentsEmpty');
+
+      tbody.innerHTML = '';
+      if (users.length === 0) {
+        empty.style.display = 'block';
+        document.getElementById('studentsTable').style.display = 'none';
+        return;
+      }
+
+      empty.style.display = 'none';
+      document.getElementById('studentsTable').style.display = 'table';
+
+      users.forEach(student => {
+        const row = tbody.insertRow();
+        row.innerHTML = `
+          <td>${student.name}</td>
+          <td>${student.email}</td>
+          <td>${student.age || '-'}</td>
+          <td><span class="status-badge status-active">Active</span></td>
+          <td>${new Date(student.createdAt).toLocaleDateString()}</td>
+        `;
+      });
+    }
+
+    function renderClasses() {
+      const classes = getClasses();
+      const tbody = document.getElementById('classesTableBody');
+      const empty = document.getElementById('classesEmpty');
+
+      tbody.innerHTML = '';
+      if (classes.length === 0) {
+        empty.style.display = 'block';
+        document.getElementById('classesTable').style.display = 'none';
+        return;
+      }
+
+      empty.style.display = 'none';
+      document.getElementById('classesTable').style.display = 'table';
+
+      classes.forEach(cls => {
+        const row = tbody.insertRow();
+        row.innerHTML = `
+          <td>${cls.name}</td>
+          <td>${cls.instructor}</td>
+          <td>${cls.studentCount || 0}</td>
+          <td><span class="status-badge status-${cls.status.toLowerCase()}">${cls.status}</span></td>
+          <td>${cls.schedule}</td>
+          <td>
+            <div class="action-buttons">
+              <button class="action-buttons button btn-edit btn-small" onclick="editClass('${cls.id}')">Edit</button>
+              <button class="action-buttons button btn-delete btn-small" onclick="deleteClass('${cls.id}')">Delete</button>
+            </div>
+          </td>
+        `;
+      });
+    }
+
+    function renderAssignments() {
+      const assignments = getAssignments();
+      const classes = getClasses();
+      const tbody = document.getElementById('assignmentsTableBody');
+      const empty = document.getElementById('assignmentsEmpty');
+
+      tbody.innerHTML = '';
+      if (assignments.length === 0) {
+        empty.style.display = 'block';
+        document.getElementById('assignmentsTable').style.display = 'none';
+        return;
+      }
+
+      empty.style.display = 'none';
+      document.getElementById('assignmentsTable').style.display = 'table';
+
+      assignments.forEach(assign => {
+        const cls = classes.find(c => c.id === assign.classId);
+        const row = tbody.insertRow();
+        row.innerHTML = `
+          <td>${assign.title}</td>
+          <td>${cls?.name || 'Unknown'}</td>
+          <td>${new Date(assign.dueDate).toLocaleDateString()}</td>
+          <td>${assign.submissions || 0}/${assign.totalStudents || 0}</td>
+          <td><span class="status-badge status-active">Active</span></td>
+          <td>
+            <div class="action-buttons">
+              <button class="action-buttons button btn-edit btn-small" onclick="editAssignment('${assign.id}')">Edit</button>
+              <button class="action-buttons button btn-delete btn-small" onclick="deleteAssignment('${assign.id}')">Delete</button>
+            </div>
+          </td>
+        `;
+      });
+    }
+
+    function renderComplaints() {
+      const complaints = getComplaints();
+      const tbody = document.getElementById('complaintsTableBody');
+      const empty = document.getElementById('complaintsEmpty');
+
+      tbody.innerHTML = '';
+      if (complaints.length === 0) {
+        empty.style.display = 'block';
+        document.getElementById('complaintsTable').style.display = 'none';
+        return;
+      }
+
+      empty.style.display = 'none';
+      document.getElementById('complaintsTable').style.display = 'table';
+
+      complaints.forEach(complaint => {
+        const row = tbody.insertRow();
+        row.innerHTML = `
+          <td>${complaint.userName}</td>
+          <td>${complaint.description.substring(0, 50)}...</td>
+          <td>${new Date(complaint.date).toLocaleDateString()}</td>
+          <td><span class="status-badge status-${complaint.status.toLowerCase()}">${complaint.status}</span></td>
+          <td>
+            <div class="action-buttons">
+              ${complaint.status === 'Pending' ? `<button class="action-buttons button btn-resolve btn-small" onclick="resolveComplaint('${complaint.id}')">Resolve</button>` : ''}
+              <button class="action-buttons button btn-delete btn-small" onclick="deleteComplaint('${complaint.id}')">Delete</button>
+            </div>
+          </td>
+        `;
+      });
+    }
+
+    function renderAuditLog() {
+      const logs = getAuditLog().slice(0, 100);
+      const tbody = document.getElementById('auditTableBody');
+      const empty = document.getElementById('auditEmpty');
+
+      tbody.innerHTML = '';
+      if (logs.length === 0) {
+        empty.style.display = 'block';
+        document.getElementById('auditTable').style.display = 'none';
+        return;
+      }
+
+      empty.style.display = 'none';
+      document.getElementById('auditTable').style.display = 'table';
+
+      logs.forEach(log => {
+        const row = tbody.insertRow();
+        row.innerHTML = `
+          <td>${log.admin}</td>
+          <td>${log.action}</td>
+          <td>${new Date(log.timestamp).toLocaleString()}</td>
+          <td>${log.details}</td>
+        `;
+      });
+    }
+
+    // Form handlers
+    function setupFormHandlers() {
+      document.getElementById('userForm').addEventListener('submit', saveUserForm);
+      document.getElementById('classForm').addEventListener('submit', saveClassForm);
+      document.getElementById('assignmentForm').addEventListener('submit', saveAssignmentForm);
+      document.getElementById('complaintForm').addEventListener('submit', resolveComplaintForm);
+
+      document.getElementById('addUserBtn').addEventListener('click', () => {
+        currentEditingId = null;
+        document.getElementById('userModalTitle').textContent = 'Add New User';
+        document.getElementById('userForm').reset();
+        openUserModal();
+      });
+
+      document.getElementById('addClassBtn').addEventListener('click', () => {
+        currentEditingId = null;
+        document.getElementById('classModalTitle').textContent = 'Add New Class';
+        document.getElementById('classForm').reset();
+        openClassModal();
+      });
+
+      document.getElementById('addAssignmentBtn').addEventListener('click', () => {
+        currentEditingId = null;
+        document.getElementById('assignmentModalTitle').textContent = 'Add New Assignment';
+        document.getElementById('assignmentForm').reset();
+        populateClassDropdown();
+        openAssignmentModal();
+      });
+    }
+
+    // User operations
+    function saveUserForm(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      
+      if (currentEditingId) {
+        const users = getAuthUsers();
+        const idx = users.findIndex(u => u.id === currentEditingId);
+        if (idx > -1) {
+          users[idx] = { ...users[idx], ...Object.fromEntries(formData) };
+          saveAuthUsers(users);
+          logAction('Modified', 'User', `Updated user ${formData.get('name')}`);
+        }
+      } else {
+        const users = getAuthUsers();
+        const newUser = {
+          id: `user-${Date.now()}`,
+          ...Object.fromEntries(formData),
+          createdAt: new Date().toISOString()
+        };
+        users.push(newUser);
+        saveAuthUsers(users);
+        logAction('Created', 'User', `Added new user ${formData.get('name')}`);
+      }
+
+      closeUserModal();
+      renderUsers();
+      renderOverview();
+    }
+
+    function editUser(userId) {
+      const users = getAuthUsers();
+      const user = users.find(u => u.id === userId);
+      if (!user) return;
+
+      currentEditingId = userId;
+      document.getElementById('userModalTitle').textContent = 'Edit User';
+      document.getElementById('userName').value = user.name;
+      document.getElementById('userEmail').value = user.email;
+      document.getElementById('userPassword').value = user.password;
+      document.getElementById('userRole').value = user.role;
+      document.getElementById('userBio').value = user.bio || '';
+      openUserModal();
+    }
+
+    function deleteUser(userId) {
+      if (!confirm('Are you sure you want to delete this user?')) return;
+      
+      const users = getAuthUsers();
+      const user = users.find(u => u.id === userId);
+      const filtered = users.filter(u => u.id !== userId);
+      saveAuthUsers(filtered);
+      logAction('Deleted', 'User', `Removed user ${user?.name}`);
+      renderUsers();
+      renderOverview();
+    }
+
+    // Class operations
+    function saveClassForm(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      
+      if (currentEditingId) {
+        const classes = getClasses();
+        const idx = classes.findIndex(c => c.id === currentEditingId);
+        if (idx > -1) {
+          classes[idx] = { ...classes[idx], ...Object.fromEntries(formData) };
+          saveClasses(classes);
+          logAction('Modified', 'Class', `Updated class ${formData.get('name')}`);
+        }
+      } else {
+        const classes = getClasses();
+        const newClass = {
+          id: `class-${Date.now()}`,
+          ...Object.fromEntries(formData),
+          studentCount: 0
+        };
+        classes.push(newClass);
+        saveClasses(classes);
+        logAction('Created', 'Class', `Added new class ${formData.get('name')}`);
+      }
+
+      closeClassModal();
+      renderClasses();
+      renderOverview();
+    }
+
+    function editClass(classId) {
+      const classes = getClasses();
+      const cls = classes.find(c => c.id === classId);
+      if (!cls) return;
+
+      currentEditingId = classId;
+      document.getElementById('classModalTitle').textContent = 'Edit Class';
+      document.getElementById('className').value = cls.name;
+      document.getElementById('classInstructor').value = cls.instructor;
+      document.getElementById('classSchedule').value = cls.schedule;
+      document.getElementById('classStatus').value = cls.status;
+      document.getElementById('classDescription').value = cls.description || '';
+      openClassModal();
+    }
+
+    function deleteClass(classId) {
+      if (!confirm('Are you sure you want to delete this class?')) return;
+      
+      const classes = getClasses();
+      const cls = classes.find(c => c.id === classId);
+      const filtered = classes.filter(c => c.id !== classId);
+      saveClasses(filtered);
+      logAction('Deleted', 'Class', `Removed class ${cls?.name}`);
+      renderClasses();
+      renderOverview();
+    }
+
+    // Assignment operations
+    function populateClassDropdown() {
+      const classes = getClasses();
+      const select = document.getElementById('assignmentClass');
+      select.innerHTML = '<option value="">Select a class</option>';
+      classes.forEach(cls => {
+        const opt = document.createElement('option');
+        opt.value = cls.id;
+        opt.textContent = cls.name;
+        select.appendChild(opt);
+      });
+    }
+
+    function saveAssignmentForm(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      
+      if (currentEditingId) {
+        const assignments = getAssignments();
+        const idx = assignments.findIndex(a => a.id === currentEditingId);
+        if (idx > -1) {
+          assignments[idx] = { ...assignments[idx], ...Object.fromEntries(formData) };
+          saveAssignments(assignments);
+          logAction('Modified', 'Assignment', `Updated assignment ${formData.get('title')}`);
+        }
+      } else {
+        const assignments = getAssignments();
+        const newAssignment = {
+          id: `assign-${Date.now()}`,
+          ...Object.fromEntries(formData),
+          submissions: 0,
+          totalStudents: 0
+        };
+        assignments.push(newAssignment);
+        saveAssignments(assignments);
+        logAction('Created', 'Assignment', `Added new assignment ${formData.get('title')}`);
+      }
+
+      closeAssignmentModal();
+      renderAssignments();
+      renderOverview();
+    }
+
+    function editAssignment(assignmentId) {
+      const assignments = getAssignments();
+      const assign = assignments.find(a => a.id === assignmentId);
+      if (!assign) return;
+
+      currentEditingId = assignmentId;
+      document.getElementById('assignmentModalTitle').textContent = 'Edit Assignment';
+      populateClassDropdown();
+      document.getElementById('assignmentTitle').value = assign.title;
+      document.getElementById('assignmentClass').value = assign.classId;
+      document.getElementById('assignmentDueDate').value = assign.dueDate;
+      document.getElementById('assignmentDescription').value = assign.description || '';
+      openAssignmentModal();
+    }
+
+    function deleteAssignment(assignmentId) {
+      if (!confirm('Are you sure you want to delete this assignment?')) return;
+      
+      const assignments = getAssignments();
+      const assign = assignments.find(a => a.id === assignmentId);
+      const filtered = assignments.filter(a => a.id !== assignmentId);
+      saveAssignments(filtered);
+      logAction('Deleted', 'Assignment', `Removed assignment ${assign?.title}`);
+      renderAssignments();
+      renderOverview();
+    }
+
+    // Complaint operations
+    function resolveComplaint(complaintId) {
+      currentEditingId = complaintId;
+      document.getElementById('complaintForm').reset();
+      openComplaintModal();
+    }
+
+    function resolveComplaintForm(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      
+      const complaints = getComplaints();
+      const idx = complaints.findIndex(c => c.id === currentEditingId);
+      if (idx > -1) {
+        complaints[idx].status = 'Resolved';
+        complaints[idx].resolution = formData.get('resolution');
+        complaints[idx].resolvedAt = new Date().toISOString();
+        saveComplaints(complaints);
+        logAction('Resolved', 'Complaint', `Marked complaint ${currentEditingId} as resolved`);
+      }
+
+      closeComplaintModal();
+      renderComplaints();
+      renderOverview();
+    }
+
+    function deleteComplaint(complaintId) {
+      if (!confirm('Are you sure you want to delete this complaint?')) return;
+      
+      const complaints = getComplaints();
+      const filtered = complaints.filter(c => c.id !== complaintId);
+      saveComplaints(filtered);
+      logAction('Deleted', 'Complaint', `Removed complaint ${complaintId}`);
+      renderComplaints();
+      renderOverview();
+    }
+
+    // Modal functions
+    function openUserModal() { document.getElementById('userModal').classList.add('active'); }
+    function closeUserModal() { document.getElementById('userModal').classList.remove('active'); }
+    function openClassModal() { document.getElementById('classModal').classList.add('active'); }
+    function closeClassModal() { document.getElementById('classModal').classList.remove('active'); }
+    function openAssignmentModal() { document.getElementById('assignmentModal').classList.add('active'); }
+    function closeAssignmentModal() { document.getElementById('assignmentModal').classList.remove('active'); }
+    function openComplaintModal() { document.getElementById('complaintModal').classList.add('active'); }
+    function closeComplaintModal() { document.getElementById('complaintModal').classList.remove('active'); }
+
+    function loadAllData() {
+      renderUsers();
+      renderStudents();
+      renderClasses();
+      renderAssignments();
+      renderComplaints();
+      renderAuditLog();
+    }
+  </script>
+</body>
+</html>
