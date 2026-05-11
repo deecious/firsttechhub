@@ -379,7 +379,8 @@
             <thead>
               <tr>
                 <th>Name</th>
-                <th>Email</th>
+                <th>Personal Email</th>
+                <th>System Email</th>
                 <th>Role</th>
                 <th>Created</th>
                 <th>Actions</th>
@@ -506,14 +507,18 @@
         <label for="userName">Name *</label>
         <input id="userName" name="name" type="text" required />
 
-        <label for="userEmail">Email *</label>
-        <input id="userEmail" name="email" type="email" required />
+        <label for="userEmail">Personal Email (Alternative) *</label>
+        <input id="userEmail" name="email" type="email" required placeholder="user@gmail.com" />
+
+        <label for="userSystemEmail">System Email (Auto-generated)</label>
+        <input id="userSystemEmail" name="systemEmail" type="email" disabled placeholder="Will be generated from name and role" />
+        <small style="display: block; margin: -10px 0 15px 0; color: #666;">Format: firstname.lastname@[role].firsttechhub.com</small>
 
         <label for="userPassword">Password *</label>
         <input id="userPassword" name="password" type="password" required />
 
         <label for="userRole">Role *</label>
-        <select id="userRole" name="role" required>
+        <select id="userRole" name="role" required onchange="generateSystemEmail()">
           <option value="Student">Student</option>
           <option value="Tutor">Tutor</option>
           <option value="Parent">Parent</option>
@@ -599,6 +604,28 @@
         <div class="modal-actions">
           <button type="button" class="btn-cancel" onclick="closeComplaintModal()">Cancel</button>
           <button type="submit" class="btn-save">Mark as Resolved</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Password Reset Modal -->
+  <div class="form-modal" id="resetModal">
+    <div class="form-modal-content">
+      <h3>Send Password Reset Link</h3>
+      <p id="resetUserInfo" style="color: #666; margin-bottom: 20px;"></p>
+      <form id="resetForm">
+        <label for="resetEmail">Send Reset Link To:</label>
+        <input id="resetEmail" name="email" type="email" disabled style="background: #f5f5f5;" />
+
+        <label for="resetNewPassword">New Password *</label>
+        <input id="resetNewPassword" name="newPassword" type="password" required placeholder="Set a temporary password" />
+
+        <small style="display: block; margin: -10px 0 15px 0; color: #666;">This temporary password will be sent to the user's email</small>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeResetModal()">Cancel</button>
+          <button type="submit" class="btn-save">Send Reset Link</button>
         </div>
       </form>
     </div>
@@ -760,14 +787,17 @@
 
       users.forEach(user => {
         const row = tbody.insertRow();
+        const systemEmail = user.systemEmail || user.email;
         row.innerHTML = `
           <td>${user.name}</td>
-          <td>${user.email}</td>
+          <td>${user.email || 'Not provided'}</td>
+          <td><strong>${systemEmail}</strong></td>
           <td><span class="status-badge status-active">${user.role}</span></td>
           <td>${new Date(user.createdAt).toLocaleDateString()}</td>
           <td>
             <div class="action-buttons">
               <button class="action-buttons button btn-edit btn-small" onclick="editUser('${user.id}')">Edit</button>
+              <button class="action-buttons button btn-resolve btn-small" onclick="resetUserPassword('${user.id}')">Reset Pass</button>
               <button class="action-buttons button btn-delete btn-small" onclick="deleteUser('${user.id}')">Delete</button>
             </div>
           </td>
@@ -934,6 +964,10 @@
       document.getElementById('classForm').addEventListener('submit', saveClassForm);
       document.getElementById('assignmentForm').addEventListener('submit', saveAssignmentForm);
       document.getElementById('complaintForm').addEventListener('submit', resolveComplaintForm);
+      document.getElementById('resetForm').addEventListener('submit', sendResetLink);
+
+      document.getElementById('userName').addEventListener('input', generateSystemEmail);
+      document.getElementById('userRole').addEventListener('change', generateSystemEmail);
 
       document.getElementById('addUserBtn').addEventListener('click', () => {
         currentEditingId = null;
@@ -962,25 +996,27 @@
     function saveUserForm(e) {
       e.preventDefault();
       const formData = new FormData(e.target);
-      
+      const systemEmail = document.getElementById('userSystemEmail').value;
+
       if (currentEditingId) {
         const users = getAuthUsers();
         const idx = users.findIndex(u => u.id === currentEditingId);
         if (idx > -1) {
-          users[idx] = { ...users[idx], ...Object.fromEntries(formData) };
+          users[idx] = { ...users[idx], ...Object.fromEntries(formData), systemEmail };
           saveAuthUsers(users);
-          logAction('Modified', 'User', `Updated user ${formData.get('name')}`);
+          logAction('Modified', 'User', `Updated user ${formData.get('name')} - Assigned email: ${systemEmail}`);
         }
       } else {
         const users = getAuthUsers();
         const newUser = {
           id: `user-${Date.now()}`,
           ...Object.fromEntries(formData),
+          systemEmail,
           createdAt: new Date().toISOString()
         };
         users.push(newUser);
         saveAuthUsers(users);
-        logAction('Created', 'User', `Added new user ${formData.get('name')}`);
+        logAction('Created', 'User', `Added new user ${formData.get('name')} - Assigned email: ${systemEmail}`);
       }
 
       closeUserModal();
@@ -1000,6 +1036,7 @@
       document.getElementById('userPassword').value = user.password;
       document.getElementById('userRole').value = user.role;
       document.getElementById('userBio').value = user.bio || '';
+      document.getElementById('userSystemEmail').value = user.systemEmail || user.email;
       openUserModal();
     }
 
@@ -1179,9 +1216,68 @@
       renderOverview();
     }
 
+    // System email generation
+    function generateSystemEmail() {
+      const name = document.getElementById('userName').value.trim();
+      const role = document.getElementById('userRole').value;
+
+      if (!name) {
+        document.getElementById('userSystemEmail').value = '';
+        return;
+      }
+
+      const nameParts = name.split(' ');
+      const firstName = nameParts[0].toLowerCase();
+      const lastName = nameParts[nameParts.length - 1].toLowerCase();
+      const domain = role.toLowerCase();
+
+      const systemEmail = `${firstName}.${lastName}@${domain}.firsttechhub.com`;
+      document.getElementById('userSystemEmail').value = systemEmail;
+    }
+
+    // Password reset
+    function resetUserPassword(userId) {
+      const users = getAuthUsers();
+      const user = users.find(u => u.id === userId);
+      if (!user) return;
+
+      document.getElementById('resetUserInfo').innerHTML = `
+        <strong>${user.name}</strong><br>
+        Personal Email: ${user.email || 'Not provided'}<br>
+        System Email: ${user.systemEmail || user.email}
+      `;
+      document.getElementById('resetEmail').value = user.systemEmail || user.email;
+      currentEditingId = userId;
+      openResetModal();
+    }
+
+    function sendResetLink(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const newPassword = formData.get('newPassword');
+
+      const users = getAuthUsers();
+      const idx = users.findIndex(u => u.id === currentEditingId);
+      if (idx > -1) {
+        const user = users[idx];
+        user.password = newPassword;
+        user.passwordResetAt = new Date().toISOString();
+        saveAuthUsers(users);
+
+        logAction('Reset', 'Password', `Sent password reset link to ${user.name} (${user.systemEmail || user.email})`);
+
+        alert(`✅ Password reset email sent!\n\nTo: ${user.systemEmail || user.email}\nNew Password: ${newPassword}\n\n(In production, this would be sent via email service)`);
+      }
+
+      closeResetModal();
+      renderUsers();
+    }
+
     // Modal functions
     function openUserModal() { document.getElementById('userModal').classList.add('active'); }
     function closeUserModal() { document.getElementById('userModal').classList.remove('active'); }
+    function openResetModal() { document.getElementById('resetModal').classList.add('active'); }
+    function closeResetModal() { document.getElementById('resetModal').classList.remove('active'); }
     function openClassModal() { document.getElementById('classModal').classList.add('active'); }
     function closeClassModal() { document.getElementById('classModal').classList.remove('active'); }
     function openAssignmentModal() { document.getElementById('assignmentModal').classList.add('active'); }
