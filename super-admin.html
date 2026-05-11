@@ -503,19 +503,22 @@
   <div class="form-modal" id="userModal">
     <div class="form-modal-content">
       <h3 id="userModalTitle">Add New User</h3>
+      <div style="background: #E3F2FD; border-left: 4px solid #2196F3; padding: 12px; margin-bottom: 20px; border-radius: 4px;">
+        <p style="margin: 0; color: #1565C0; font-size: 13px;">
+          <strong>📧 Setup Email:</strong> User will receive an email at their personal address with a link to set their own password.
+        </p>
+      </div>
       <form id="userForm">
         <label for="userName">Name *</label>
         <input id="userName" name="name" type="text" required />
 
-        <label for="userEmail">Personal Email (Alternative) *</label>
+        <label for="userEmail">Personal Email Address (Alternative) *</label>
         <input id="userEmail" name="email" type="email" required placeholder="user@gmail.com" />
+        <small style="display: block; margin: -10px 0 15px 0; color: #666;">User will receive account setup link here</small>
 
         <label for="userSystemEmail">System Email (Auto-generated)</label>
         <input id="userSystemEmail" name="systemEmail" type="email" disabled placeholder="Will be generated from name and role" />
         <small style="display: block; margin: -10px 0 15px 0; color: #666;">Format: firstname.lastname@[role].firsttechhub.com</small>
-
-        <label for="userPassword">Password *</label>
-        <input id="userPassword" name="password" type="password" required />
 
         <label for="userRole">Role *</label>
         <select id="userRole" name="role" required onchange="generateSystemEmail()">
@@ -530,7 +533,7 @@
 
         <div class="modal-actions">
           <button type="button" class="btn-cancel" onclick="closeUserModal()">Cancel</button>
-          <button type="submit" class="btn-save">Save User</button>
+          <button type="submit" class="btn-save">Send Setup Email & Create Account</button>
         </div>
       </form>
     </div>
@@ -973,6 +976,7 @@
         currentEditingId = null;
         document.getElementById('userModalTitle').textContent = 'Add New User';
         document.getElementById('userForm').reset();
+        document.querySelector('#userForm button[type="submit"]').textContent = 'Send Setup Email & Create Account';
         openUserModal();
       });
 
@@ -997,6 +1001,8 @@
       e.preventDefault();
       const formData = new FormData(e.target);
       const systemEmail = document.getElementById('userSystemEmail').value;
+      const personalEmail = formData.get('email');
+      const userName = formData.get('name');
 
       if (currentEditingId) {
         const users = getAuthUsers();
@@ -1004,24 +1010,40 @@
         if (idx > -1) {
           users[idx] = { ...users[idx], ...Object.fromEntries(formData), systemEmail };
           saveAuthUsers(users);
-          logAction('Modified', 'User', `Updated user ${formData.get('name')} - Assigned email: ${systemEmail}`);
+          logAction('Modified', 'User', `Updated user ${userName} - Email: ${systemEmail}`);
         }
+        closeUserModal();
       } else {
+        const setupToken = generateSetupToken();
         const users = getAuthUsers();
         const newUser = {
           id: `user-${Date.now()}`,
-          ...Object.fromEntries(formData),
+          name: userName,
+          email: personalEmail,
           systemEmail,
+          role: formData.get('role'),
+          bio: formData.get('bio') || '',
+          password: null,
+          setupToken,
+          setupTokenExpiry: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+          setupEmailSentAt: new Date().toISOString(),
           createdAt: new Date().toISOString()
         };
         users.push(newUser);
         saveAuthUsers(users);
-        logAction('Created', 'User', `Added new user ${formData.get('name')} - Assigned email: ${systemEmail}`);
+
+        logAction('Created', 'User', `Created account for ${userName} - Setup email sent to ${personalEmail}`);
+
+        alert(`✅ Account Created Successfully!\n\n📧 Setup Email Sent To: ${personalEmail}\n\nThe user will receive an email with a link to set their password.\n\nSetup Link (Valid for 7 days):\nhttp://localhost/setup?token=${setupToken}\n\n(In production, this link would be sent via email service)`);
       }
 
       closeUserModal();
       renderUsers();
       renderOverview();
+    }
+
+    function generateSetupToken() {
+      return 'setup_' + Math.random().toString(36).substr(2, 32) + '_' + Date.now();
     }
 
     function editUser(userId) {
@@ -1030,13 +1052,13 @@
       if (!user) return;
 
       currentEditingId = userId;
-      document.getElementById('userModalTitle').textContent = 'Edit User';
+      document.getElementById('userModalTitle').textContent = 'Edit User Details';
       document.getElementById('userName').value = user.name;
       document.getElementById('userEmail').value = user.email;
-      document.getElementById('userPassword').value = user.password;
       document.getElementById('userRole').value = user.role;
       document.getElementById('userBio').value = user.bio || '';
       document.getElementById('userSystemEmail').value = user.systemEmail || user.email;
+      document.querySelector('#userForm button[type="submit"]').textContent = 'Update User';
       openUserModal();
     }
 
