@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parent Dashboard | FirstTechHub</title>
+  <link rel="icon" type="image/png" href="images/logo.png" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="js/auth.js" defer></script>
+  <script src="js/main.js" defer></script>
+  <style>
+    .dashboard-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin: 30px 0;
+    }
+
+    .card {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .card h3 {
+      margin-top: 0;
+      color: #333;
+      border-bottom: 2px solid #4CAF50;
+      padding-bottom: 10px;
+    }
+
+    .search-section {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .search-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .search-form input,
+    .search-form select {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .search-results {
+      margin-top: 20px;
+    }
+
+    .student-item {
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .student-info {
+      flex: 1;
+    }
+
+    .student-info h4 {
+      margin: 0 0 5px 0;
+      color: #333;
+    }
+
+    .student-info p {
+      margin: 3px 0;
+      color: #666;
+      font-size: 13px;
+    }
+
+    .student-info .reg-number {
+      background: #E3F2FD;
+      color: #1565C0;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-weight: 600;
+      display: inline-block;
+      margin-top: 5px;
+    }
+
+    .bound-students-list {
+      margin-top: 20px;
+    }
+
+    .bound-student {
+      background: white;
+      border-left: 4px solid #4CAF50;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 4px;
+    }
+
+    .bound-student h4 {
+      margin: 0 0 10px 0;
+      color: #333;
+    }
+
+    .bound-student-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin: 10px 0;
+    }
+
+    .detail-item {
+      background: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+
+    .detail-item strong {
+      color: #333;
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .assignments-section {
+      margin-top: 15px;
+    }
+
+    .assignment-item {
+      background: #FFF3CD;
+      border-left: 4px solid #FF9800;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 3px;
+      font-size: 13px;
+    }
+
+    .assignment-item strong {
+      color: #E65100;
+    }
+
+    .performance-section {
+      margin-top: 15px;
+    }
+
+    .performance-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 13px;
+    }
+
+    .performance-item:last-child {
+      border-bottom: none;
+    }
+
+    .button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: 0.2s;
+      font-size: 13px;
+    }
+
+    .btn-bind {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .btn-bind:hover {
+      background: #388E3C;
+    }
+
+    .btn-pending {
+      background: #FF9800;
+      color: white;
+    }
+
+    .btn-unbind {
+      background: #f44336;
+      color: white;
+    }
+
+    .btn-unbind:hover {
+      background: #da190b;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .status-pending {
+      background: #FFF3CD;
+      color: #856404;
+    }
+
+    .status-approved {
+      background: #D4EDDA;
+      color: #155724;
+    }
+
+    .status-rejected {
+      background: #F8D7DA;
+      color: #721C24;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      max-width: 400px;
+      width: 90%;
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+    }
+
+    .modal-content p {
+      color: #666;
+      margin: 15px 0;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    .modal-actions button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .btn-confirm {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .btn-cancel {
+      background: #ddd;
+      color: #333;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      border-bottom: 2px solid #ddd;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      padding: 12px 20px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-weight: 500;
+      color: #666;
+      border-bottom: 3px solid transparent;
+      transition: 0.2s;
+    }
+
+    .tab.active {
+      color: #4CAF50;
+      border-bottom-color: #4CAF50;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      .search-form {
+        grid-template-columns: 1fr;
+      }
+
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .student-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-container">
+      <a href="index.html" class="brand"><img src="images/logo.png" alt="FirstTechHub logo" /></a>
+      <nav class="site-nav">
+        <a href="index.html">Home</a>
+        <a href="account.html">My Account</a>
+        <a href="#" data-logout class="nav-cta">Logout</a>
+      </nav>
+      <button class="mobile-menu" aria-label="Open navigation">☰</button>
+    </div>
+  </header>
+
+  <main class="dashboard-container">
+    <section>
+      <h1>Parent Dashboard</h1>
+      <p style="color: #666;">Manage your child's learning and bind students to your account</p>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" data-tab="search">Search & Bind Students</button>
+        <button class="tab" data-tab="bound">My Bound Students</button>
+        <button class="tab" data-tab="requests">Binding Requests</button>
+      </div>
+
+      <!-- TAB 1: Search & Bind -->
+      <div id="search" class="tab-content active">
+        <div class="search-section">
+          <h3>🔍 Search for Students</h3>
+          <div class="search-form">
+            <input type="text" id="searchName" placeholder="Search by name..." />
+            <input type="email" id="searchEmail" placeholder="Search by email..." />
+            <input type="text" id="searchRegNumber" placeholder="Search by reg number..." />
+            <button class="button btn-bind" onclick="searchStudents()">Search</button>
+          </div>
+
+          <div id="searchResults" class="search-results"></div>
+        </div>
+      </div>
+
+      <!-- TAB 2: Bound Students -->
+      <div id="bound" class="tab-content">
+        <div id="boundStudentsContainer"></div>
+        <div id="noBoundStudents" class="empty-state" style="display: none;">
+          <p>No bound students yet. Use the Search tab to bind students to your account.</p>
+        </div>
+      </div>
+
+      <!-- TAB 3: Binding Requests -->
+      <div id="requests" class="tab-content">
+        <div id="requestsContainer"></div>
+        <div id="noRequests" class="empty-state" style="display: none;">
+          <p>No binding requests made yet.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Confirm Binding Modal -->
+  <div class="modal" id="bindModal">
+    <div class="modal-content">
+      <h3>Bind Student to Your Account</h3>
+      <p id="bindModalText"></p>
+      <p style="color: #999; font-size: 13px;">A binding request will be sent to administrators for approval. You'll be notified once approved.</p>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeBindModal()">Cancel</button>
+        <button class="btn-confirm" onclick="submitBindRequest()">Send Request</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const BINDING_REQUESTS_KEY = 'ftbBindingRequests';
+    const STUDENT_BINDINGS_KEY = 'ftbStudentBindings';
+    
+    let currentBindingStudentId = null;
+    let allUsers = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const user = getSessionUser();
+      
+      if (!user || user.role !== 'Parent') {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Setup tabs
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          const tabName = tab.getAttribute('data-tab');
+          switchTab(tabName);
+        });
+      });
+
+      // Load initial data
+      allUsers = getAuthUsers();
+      loadBoundStudents();
+      loadBindingRequests();
+    });
+
+    function switchTab(tabName) {
+      // Update tabs
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+      // Update content
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById(tabName).classList.add('active');
+
+      // Load content
+      if (tabName === 'bound') {
+        loadBoundStudents();
+      } else if (tabName === 'requests') {
+        loadBindingRequests();
+      }
+    }
+
+    function searchStudents() {
+      const name = document.getElementById('searchName').value.toLowerCase();
+      const email = document.getElementById('searchEmail').value.toLowerCase();
+      const regNumber = document.getElementById('searchRegNumber').value.toLowerCase();
+
+      const students = allUsers.filter(u => u.role === 'Student');
+      
+      const results = students.filter(student => {
+        const matchName = !name || student.name.toLowerCase().includes(name);
+        const matchEmail = !email || (student.email?.toLowerCase().includes(email) || student.systemEmail?.toLowerCase().includes(email));
+        const matchReg = !regNumber || (student.regNumber?.toLowerCase().includes(regNumber));
+        
+        return matchName && matchEmail && matchReg;
+      });
+
+      renderSearchResults(results);
+    }
+
+    function renderSearchResults(students) {
+      const container = document.getElementById('searchResults');
+      const parent = getSessionUser();
+      const bindings = getStudentBindings();
+      const requests = getBindingRequests();
+
+      if (students.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No students found. Try different search criteria.</p></div>';
+        return;
+      }
+
+      container.innerHTML = '<h4 style="margin-top: 20px;">Search Results</h4>';
+      
+      students.forEach(student => {
+        const isBound = bindings.some(b => b.parent_id === parent.id && b.student_id === student.id && b.status === 'approved');
+        const hasRequest = requests.some(r => r.parent_id === parent.id && r.student_id === student.id && r.status === 'pending');
+
+        const studentDiv = document.createElement('div');
+        studentDiv.className = 'student-item';
+        
+        let buttonHtml = '';
+        if (isBound) {
+          buttonHtml = '<span class="status-badge status-approved">✅ Bound</span>';
+        } else if (hasRequest) {
+          buttonHtml = '<span class="status-badge status-pending">⏳ Request Pending</span>';
+        } else {
+          buttonHtml = `<button class="button btn-bind" onclick="initiateBinding('${student.id}', '${student.name}')">Bind Student</button>`;
+        }
+
+        studentDiv.innerHTML = `
+          <div class="student-info">
+            <h4>${student.name}</h4>
+            <p>📧 ${student.systemEmail || student.email}</p>
+            <p>📱 ${student.phone || 'N/A'}</p>
+            <span class="reg-number">Reg: ${student.regNumber || 'Not assigned'}</span>
+          </div>
+          <div>${buttonHtml}</div>
+        `;
+
+        container.appendChild(studentDiv);
+      });
+    }
+
+    function initiateBinding(studentId, studentName) {
+      currentBindingStudentId = studentId;
+      document.getElementById('bindModalText').textContent = `You are about to send a binding request for ${studentName}. The parent/guardian's account will be linked to this student's progress.`;
+      openBindModal();
+    }
+
+    function submitBindRequest() {
+      const parent = getSessionUser();
+      const requests = getBindingRequests();
+
+      const newRequest = {
+        id: `bindreq-${Date.now()}`,
+        parent_id: parent.id,
+        student_id: currentBindingStudentId,
+        status: 'pending',
+        requested_at: new Date().toISOString(),
+        approved_by: null,
+        approved_at: null
+      };
+
+      requests.push(newRequest);
+      localStorage.setItem(BINDING_REQUESTS_KEY, JSON.stringify(requests));
+
+      closeBindModal();
+      alert('✅ Binding request sent! Administrators will review and approve your request.');
+      searchStudents();
+      loadBindingRequests();
+    }
+
+    function loadBoundStudents() {
+      const parent = getSessionUser();
+      const bindings = getStudentBindings();
+      const container = document.getElementById('boundStudentsContainer');
+      const noStudents = document.getElementById('noBoundStudents');
+
+      const boundStudentIds = bindings
+        .filter(b => b.parent_id === parent.id && b.status === 'approved')
+        .map(b => b.student_id);
+
+      const boundStudents = allUsers.filter(u => boundStudentIds.includes(u.id));
+
+      if (boundStudents.length === 0) {
+        container.style.display = 'none';
+        noStudents.style.display = 'block';
+        return;
+      }
+
+      container.style.display = 'block';
+      noStudents.style.display = 'none';
+      container.innerHTML = '';
+
+      boundStudents.forEach(student => {
+        const div = document.createElement('div');
+        div.className = 'bound-student';
+        
+        div.innerHTML = `
+          <h4>👤 ${student.name}</h4>
+          <div class="bound-student-details">
+            <div class="detail-item">
+              <strong>📧 Email:</strong>
+              ${student.systemEmail}
+            </div>
+            <div class="detail-item">
+              <strong>📝 Reg Number:</strong>
+              ${student.regNumber || 'Not assigned'}
+            </div>
+            <div class="detail-item">
+              <strong>📚 Role:</strong>
+              ${student.role}
+            </div>
+            <div class="detail-item">
+              <strong>📅 Joined:</strong>
+              ${new Date(student.createdAt).toLocaleDateString()}
+            </div>
+          </div>
+
+          <div class="assignments-section">
+            <strong style="color: #FF9800;">⚠️ Outstanding Assignments:</strong>
+            <div id="assignments-${student.id}">
+              <div class="assignment-item">No outstanding assignments</div>
+            </div>
+          </div>
+
+          <div class="performance-section">
+            <strong style="color: #4CAF50;">📊 Performance:</strong>
+            <div class="performance-item">
+              <span>Completion Rate:</span>
+              <strong>85%</strong>
+            </div>
+            <div class="performance-item">
+              <span>Last Activity:</span>
+              <strong>${new Date().toLocaleDateString()}</strong>
+            </div>
+            <div class="performance-item">
+              <span>Course Progress:</span>
+              <strong>Module 5 of 8</strong>
+            </div>
+          </div>
+
+          <button class="button btn-unbind" onclick="unbindStudent('${student.id}')">Unbind Student</button>
+        `;
+
+        container.appendChild(div);
+      });
+    }
+
+    function loadBindingRequests() {
+      const parent = getSessionUser();
+      const requests = getBindingRequests();
+      const container = document.getElementById('requestsContainer');
+      const noRequests = document.getElementById('noRequests');
+
+      const parentRequests = requests.filter(r => r.parent_id === parent.id);
+
+      if (parentRequests.length === 0) {
+        container.style.display = 'none';
+        noRequests.style.display = 'block';
+        return;
+      }
+
+      container.style.display = 'block';
+      noRequests.style.display = 'none';
+      container.innerHTML = '';
+
+      parentRequests.forEach(request => {
+        const student = allUsers.find(u => u.id === request.student_id);
+        if (!student) return;
+
+        const statusClass = `status-${request.status}`;
+        const statusLabel = request.status === 'pending' ? '⏳ Pending' : request.status === 'approved' ? '✅ Approved' : '❌ Rejected';
+
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `
+          <h4>${student.name}</h4>
+          <p><strong>Email:</strong> ${student.systemEmail}</p>
+          <p><strong>Reg Number:</strong> ${student.regNumber || 'Not assigned'}</p>
+          <p><strong>Status:</strong> <span class="status-badge ${statusClass}">${statusLabel}</span></p>
+          <p style="color: #999; font-size: 13px;">Requested: ${new Date(request.requested_at).toLocaleDateString()}</p>
+          ${request.approved_at ? `<p style="color: #999; font-size: 13px;">Approved: ${new Date(request.approved_at).toLocaleDateString()}</p>` : ''}
+        `;
+
+        container.appendChild(div);
+      });
+    }
+
+    function unbindStudent(studentId) {
+      if (!confirm('Are you sure you want to unbind this student? You will no longer see their performance and assignments.')) {
+        return;
+      }
+
+      const parent = getSessionUser();
+      const bindings = getStudentBindings();
+      const filtered = bindings.filter(b => !(b.parent_id === parent.id && b.student_id === studentId));
+      
+      localStorage.setItem(STUDENT_BINDINGS_KEY, JSON.stringify(filtered));
+      loadBoundStudents();
+    }
+
+    function getBindingRequests() {
+      try {
+        return JSON.parse(localStorage.getItem(BINDING_REQUESTS_KEY)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function getStudentBindings() {
+      try {
+        return JSON.parse(localStorage.getItem(STUDENT_BINDINGS_KEY)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function openBindModal() {
+      document.getElementById('bindModal').classList.add('active');
+    }
+
+    function closeBindModal() {
+      document.getElementById('bindModal').classList.remove('active');
+    }
+  </script>
+</body>
+</html>
