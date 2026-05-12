@@ -339,6 +339,7 @@
         <h3>Dashboard</h3>
         <button class="sidebar-btn active" data-section="overview">📊 Overview</button>
         <button class="sidebar-btn" data-section="users">👥 Users</button>
+        <button class="sidebar-btn" data-section="staff">👨‍💼 Staff Roles</button>
         <button class="sidebar-btn" data-section="students">🎓 Students</button>
         <button class="sidebar-btn" data-section="classes">📚 Classes</button>
         <button class="sidebar-btn" data-section="assignments">✏️ Assignments</button>
@@ -369,6 +370,28 @@
             </div>
           </div>
           <div id="overviewContent"></div>
+        </section>
+
+        <!-- Staff Management (SuperAdmin Only) -->
+        <section class="admin-section" id="staff">
+          <h2>Staff Role Management</h2>
+          <p style="color: #666; margin-bottom: 20px;">⚠️ Only SuperAdmin can assign staff roles and privileges</p>
+          <button class="button primary" id="assignStaffBtn">+ Assign Staff Role</button>
+          <table class="user-table" id="staffTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Staff Role</th>
+                <th>Assigned</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="staffTableBody"></tbody>
+          </table>
+          <div id="staffEmpty" class="empty-state" style="display: none;">
+            <p>No staff members assigned yet</p>
+          </div>
         </section>
 
         <!-- Users Management -->
@@ -612,6 +635,38 @@
     </div>
   </div>
 
+  <!-- Staff Role Assignment Modal -->
+  <div class="form-modal" id="staffModal">
+    <div class="form-modal-content">
+      <h3>Assign Staff Role</h3>
+      <form id="staffForm">
+        <label for="staffUserId">Select User *</label>
+        <select id="staffUserId" name="userId" required>
+          <option value="">Choose a user</option>
+        </select>
+
+        <label for="staffRoleSelect">Staff Role *</label>
+        <select id="staffRoleSelect" name="role" required>
+          <option value="">Select a role</option>
+          <option value="Tutor">🎓 Tutor</option>
+          <option value="Admission Officer">📋 Admission Officer</option>
+          <option value="Accountant">💰 Accountant</option>
+          <option value="Admin Officer">👔 Admin Officer</option>
+          <option value="LLM Officer">🤖 LLM Officer</option>
+          <option value="SuperAdmin">🔐 SuperAdmin</option>
+        </select>
+
+        <label for="staffPermissions">Permissions (JSON) - Optional</label>
+        <textarea id="staffPermissions" name="permissions" placeholder='{"canEditUsers": true, "canViewLogs": true}'></textarea>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeStaffModal()">Cancel</button>
+          <button type="submit" class="btn-save">Assign Role</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Password Reset Modal -->
   <div class="form-modal" id="resetModal">
     <div class="form-modal-content">
@@ -641,6 +696,7 @@
     const ASSIGNMENTS_KEY = 'ftbAssignments';
     const COMPLAINTS_KEY = 'ftbComplaints';
     const AUDIT_LOG_KEY = 'ftbAuditLog';
+    const STAFF_ROLES_KEY = 'ftbStaffRoles';
 
     // Current editing context
     let currentEditingId = null;
@@ -674,9 +730,10 @@
     function showSection(sectionId) {
       document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
       document.getElementById(sectionId).classList.add('active');
-      
+
       switch(sectionId) {
         case 'users': renderUsers(); break;
+        case 'staff': renderStaffRoles(); break;
         case 'students': renderStudents(); break;
         case 'classes': renderClasses(); break;
         case 'assignments': renderAssignments(); break;
@@ -994,6 +1051,128 @@
         populateClassDropdown();
         openAssignmentModal();
       });
+
+      document.getElementById('assignStaffBtn').addEventListener('click', () => {
+        populateUserDropdown();
+        openStaffModal();
+      });
+
+      document.getElementById('staffForm').addEventListener('submit', assignStaffRole);
+    }
+
+    // Staff role functions
+    function getStaffRoles() {
+      try {
+        return JSON.parse(localStorage.getItem(STAFF_ROLES_KEY)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveStaffRoles(data) {
+      localStorage.setItem(STAFF_ROLES_KEY, JSON.stringify(data));
+      logAction('Modified', 'Staff Roles', `Updated staff role assignments`);
+    }
+
+    function populateUserDropdown() {
+      const users = getAuthUsers();
+      const select = document.getElementById('staffUserId');
+      select.innerHTML = '<option value="">Choose a user</option>';
+
+      users.forEach(user => {
+        if (user.role !== 'Admin') {
+          const opt = document.createElement('option');
+          opt.value = user.id;
+          opt.textContent = `${user.name} (${user.role})`;
+          select.appendChild(opt);
+        }
+      });
+    }
+
+    function renderStaffRoles() {
+      const staffRoles = getStaffRoles();
+      const users = getAuthUsers();
+      const tbody = document.getElementById('staffTableBody');
+      const empty = document.getElementById('staffEmpty');
+
+      tbody.innerHTML = '';
+      if (staffRoles.length === 0) {
+        empty.style.display = 'block';
+        document.getElementById('staffTable').style.display = 'none';
+        return;
+      }
+
+      empty.style.display = 'none';
+      document.getElementById('staffTable').style.display = 'table';
+
+      staffRoles.forEach(role => {
+        const user = users.find(u => u.id === role.user_id);
+        if (!user) return;
+
+        const row = tbody.insertRow();
+        row.innerHTML = `
+          <td>${user.name}</td>
+          <td>${user.systemEmail || user.email}</td>
+          <td><span class="status-badge status-active">${role.staff_role}</span></td>
+          <td>${new Date(role.assigned_at).toLocaleDateString()}</td>
+          <td>
+            <div class="action-buttons">
+              <button class="action-buttons button btn-delete btn-small" onclick="removeStaffRole('${role.id}')">Remove</button>
+            </div>
+          </td>
+        `;
+      });
+    }
+
+    function assignStaffRole(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+
+      const staffRoles = getStaffRoles();
+      const admin = getSessionUser();
+
+      try {
+        const permissions = formData.get('permissions') ? JSON.parse(formData.get('permissions')) : {};
+
+        const newRole = {
+          id: `role-${Date.now()}`,
+          user_id: formData.get('userId'),
+          staff_role: formData.get('role'),
+          permissions,
+          assigned_by: admin.id,
+          assigned_at: new Date().toISOString()
+        };
+
+        staffRoles.push(newRole);
+        saveStaffRoles(staffRoles);
+
+        const users = getAuthUsers();
+        const user = users.find(u => u.id === newRole.user_id);
+        logAction('Created', 'Staff Role', `Assigned ${newRole.staff_role} to ${user?.name}`);
+
+        closeStaffModal();
+        renderStaffRoles();
+        document.getElementById('staffForm').reset();
+      } catch (error) {
+        alert('Invalid permissions JSON: ' + error.message);
+      }
+    }
+
+    function removeStaffRole(roleId) {
+      if (!confirm('Remove this staff role?')) return;
+
+      const staffRoles = getStaffRoles();
+      const filtered = staffRoles.filter(r => r.id !== roleId);
+      saveStaffRoles(filtered);
+      renderStaffRoles();
+    }
+
+    function openStaffModal() {
+      document.getElementById('staffModal').classList.add('active');
+    }
+
+    function closeStaffModal() {
+      document.getElementById('staffModal').classList.remove('active');
     }
 
     // User operations

@@ -41,6 +41,9 @@
         <p style="margin: 0; color: #2E7D32; font-weight: 500;">You have admin access</p>
         <a href="super-admin.html" class="button primary" style="display: inline-block; margin-top: 10px;">Go to Admin Dashboard</a>
       </div>
+      <div id="emailStatusAlert" style="display: none; border-radius: 6px; padding: 15px; margin-bottom: 20px; text-align: center;">
+        <p style="margin: 0; font-weight: 500;" id="emailStatusText"></p>
+      </div>
       <div class="service-card" style="max-width: 620px; margin: 0 auto;">
         <form id="accountForm" class="contact-form" autocomplete="off">
           <h2>Account Settings</h2>
@@ -102,6 +105,28 @@
       const user = getSessionUser();
       if (user && user.role === 'Admin') {
         document.getElementById('adminAlert').style.display = 'block';
+      }
+
+      // Show email status
+      const onboardingLog = JSON.parse(localStorage.getItem('ftbOnboardingLog')) || [];
+      const userLog = onboardingLog.find(log => log.user_id === user?.id || log.personal_email === user?.email);
+
+      if (userLog) {
+        const statusAlert = document.getElementById('emailStatusAlert');
+        const statusText = document.getElementById('emailStatusText');
+
+        const statusMessages = {
+          'pending': { color: '#FFF3CD', textColor: '#856404', icon: '⏳', message: 'Your account setup is pending. Check your email for setup instructions.' },
+          'created': { color: '#D4EDDA', textColor: '#155724', icon: '✅', message: 'Your account is active and your system email has been assigned.' },
+          'suspended': { color: '#F8D7DA', textColor: '#721C24', icon: '⏸️', message: 'Your account has been suspended. Contact support.' },
+          'quarantine': { color: '#CFF4FC', textColor: '#055160', icon: '🔒', message: 'Your account is in quarantine. Contact support for assistance.' }
+        };
+
+        const status = statusMessages[userLog.email_status] || statusMessages['pending'];
+        statusAlert.style.display = 'block';
+        statusAlert.style.background = status.color;
+        statusAlert.style.color = status.textColor;
+        statusText.textContent = `${status.icon} ${status.message}`;
       }
     });
   </script>

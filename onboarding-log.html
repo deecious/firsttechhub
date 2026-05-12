@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Onboarding Log | FirstTechHub</title>
+  <link rel="icon" type="image/png" href="images/logo.png" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="js/auth.js" defer></script>
+  <script src="js/main.js" defer></script>
+  <style>
+    .onboarding-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+
+    .log-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 30px 0;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .log-table th {
+      background: #f5f5f5;
+      padding: 15px;
+      text-align: left;
+      font-weight: 600;
+      border-bottom: 2px solid #ddd;
+    }
+
+    .log-table td {
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .log-table tr:hover {
+      background: #fafafa;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-pending {
+      background: #FFF3CD;
+      color: #856404;
+    }
+
+    .status-created {
+      background: #D4EDDA;
+      color: #155724;
+    }
+
+    .status-suspended {
+      background: #F8D7DA;
+      color: #721C24;
+    }
+
+    .status-quarantine {
+      background: #CFF4FC;
+      color: #055160;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-small {
+      padding: 6px 12px;
+      font-size: 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn-edit {
+      background: #2196F3;
+      color: white;
+    }
+
+    .btn-edit:hover {
+      background: #1976D2;
+    }
+
+    .btn-approve {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .btn-approve:hover {
+      background: #388E3C;
+    }
+
+    .btn-suspend {
+      background: #FF9800;
+      color: white;
+    }
+
+    .btn-suspend:hover {
+      background: #F57C00;
+    }
+
+    .btn-quarantine {
+      background: #2196F3;
+      color: white;
+    }
+
+    .btn-quarantine:hover {
+      background: #1976D2;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+      color: #333;
+    }
+
+    .modal-content label {
+      display: block;
+      margin: 15px 0 5px 0;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .modal-content select,
+    .modal-content textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      font-family: inherit;
+      font-size: 14px;
+    }
+
+    .modal-content textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    .modal-actions button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: 0.2s;
+    }
+
+    .btn-save {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .btn-save:hover {
+      background: #388E3C;
+    }
+
+    .btn-cancel {
+      background: #ddd;
+      color: #333;
+    }
+
+    .btn-cancel:hover {
+      background: #ccc;
+    }
+
+    .stats-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .stat-card.pending {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .stat-card.created {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .stat-card.suspended {
+      background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    }
+
+    .stat-card.quarantine {
+      background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+    }
+
+    .stat-card h4 {
+      margin: 0 0 10px 0;
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    .stat-card .number {
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .filter-section {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .filter-section select {
+      padding: 10px 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
+
+    .access-denied {
+      background: #FFEBEE;
+      border: 1px solid #EF5350;
+      color: #C62828;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-container">
+      <a href="index.html" class="brand"><img src="images/logo.png" alt="FirstTechHub logo" /></a>
+      <nav class="site-nav">
+        <a href="index.html">Home</a>
+        <a href="super-admin.html">Admin</a>
+        <a href="account.html">My Account</a>
+        <a href="#" data-logout class="nav-cta">Logout</a>
+      </nav>
+      <button class="mobile-menu" aria-label="Open navigation">☰</button>
+    </div>
+  </header>
+
+  <main class="onboarding-container">
+    <section>
+      <h1>User Onboarding & Email Status Log</h1>
+      <p style="color: #666;">Manage new user accounts and email assignment status</p>
+
+      <div id="accessDenied" class="access-denied" style="display: none;">
+        <p>❌ Access Denied. Only Super Admins and IT Managers can view this page.</p>
+      </div>
+
+      <div id="content" style="display: none;">
+        <!-- Stats Section -->
+        <div class="stats-section" id="statsSection">
+          <div class="stat-card pending">
+            <h4>Pending Setup</h4>
+            <div class="number" id="statPending">0</div>
+          </div>
+          <div class="stat-card created">
+            <h4>Created</h4>
+            <div class="number" id="statCreated">0</div>
+          </div>
+          <div class="stat-card suspended">
+            <h4>Suspended</h4>
+            <div class="number" id="statSuspended">0</div>
+          </div>
+          <div class="stat-card quarantine">
+            <h4>Quarantine</h4>
+            <div class="number" id="statQuarantine">0</div>
+          </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+          <select id="filterStatus">
+            <option value="">All Status</option>
+            <option value="pending">Pending Setup</option>
+            <option value="created">Created</option>
+            <option value="suspended">Suspended</option>
+            <option value="quarantine">Quarantine</option>
+          </select>
+          <input type="text" id="searchInput" placeholder="Search by name or email..." style="flex: 1; padding: 10px 15px; border: 1px solid #ddd; border-radius: 4px;" />
+          <button class="button primary" onclick="loadOnboardingLog()">Refresh</button>
+        </div>
+
+        <!-- Log Table -->
+        <table class="log-table" id="logTable">
+          <thead>
+            <tr>
+              <th>User Name</th>
+              <th>Personal Email</th>
+              <th>System Email</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Last Updated</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="logTableBody"></tbody>
+        </table>
+
+        <div id="emptyState" class="empty-state" style="display: none;">
+          <p>No onboarding records found</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Edit Status Modal -->
+  <div class="modal" id="editModal">
+    <div class="modal-content">
+      <h3>Update Email Status</h3>
+      <form id="editForm">
+        <label for="statusSelect">Email Status *</label>
+        <select id="statusSelect" required>
+          <option value="">Select status</option>
+          <option value="pending">⏳ Pending Setup</option>
+          <option value="created">✅ Created</option>
+          <option value="suspended">⏸️ Suspended</option>
+          <option value="quarantine">🔒 Quarantine</option>
+        </select>
+
+        <label for="notesInput">Notes</label>
+        <textarea id="notesInput" placeholder="Add notes about this status change..."></textarea>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+          <button type="submit" class="btn-save">Update Status</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div>
+      <a href="index.html" class="brand footer-brand"><img src="images/logo.png" alt="FirstTechHub logo" /></a>
+      <p>Professional, inspiring, and tech-driven solutions for training and business growth.</p>
+    </div>
+    <div class="footer-links">
+      <a href="about.html">About</a>
+      <a href="services.html">Services</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/auth.js" defer></script>
+  <script src="js/supabase-init.js" defer></script>
+
+  <script>
+    let currentEditingId = null;
+    let allRecords = [];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const user = getSessionUser();
+      
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Check if user has permission (Super Admin or IT Manager)
+      const isSuperAdmin = user.role === 'Admin' && user.id === 'admin-demo'; // Simplified check
+      
+      if (!isSuperAdmin) {
+        document.getElementById('accessDenied').style.display = 'block';
+        return;
+      }
+
+      document.getElementById('content').style.display = 'block';
+      
+      // Setup event listeners
+      document.getElementById('editForm').addEventListener('submit', saveStatusChange);
+      document.getElementById('filterStatus').addEventListener('change', filterRecords);
+      document.getElementById('searchInput').addEventListener('input', filterRecords);
+      
+      // Load data (using localStorage for demo, would use Supabase in production)
+      loadOnboardingLog();
+    });
+
+    function loadOnboardingLog() {
+      try {
+        // In production, this would call Supabase via getOnboardingLog()
+        allRecords = getLocalOnboardingLog();
+        
+        updateStats();
+        renderTable(allRecords);
+      } catch (error) {
+        console.error('Error loading onboarding log:', error);
+        alert('Failed to load onboarding log');
+      }
+    }
+
+    function getLocalOnboardingLog() {
+      try {
+        return JSON.parse(localStorage.getItem('ftbOnboardingLog')) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveLocalOnboardingLog(records) {
+      localStorage.setItem('ftbOnboardingLog', JSON.stringify(records));
+    }
+
+    function updateStats() {
+      const stats = {
+        pending: 0,
+        created: 0,
+        suspended: 0,
+        quarantine: 0
+      };
+
+      allRecords.forEach(record => {
+        stats[record.email_status]++;
+      });
+
+      document.getElementById('statPending').textContent = stats.pending;
+      document.getElementById('statCreated').textContent = stats.created;
+      document.getElementById('statSuspended').textContent = stats.suspended;
+      document.getElementById('statQuarantine').textContent = stats.quarantine;
+    }
+
+    function renderTable(records) {
+      const tbody = document.getElementById('logTableBody');
+      const emptyState = document.getElementById('emptyState');
+
+      tbody.innerHTML = '';
+
+      if (records.length === 0) {
+        emptyState.style.display = 'block';
+        document.getElementById('logTable').style.display = 'none';
+        return;
+      }
+
+      emptyState.style.display = 'none';
+      document.getElementById('logTable').style.display = 'table';
+
+      records.forEach(record => {
+        const row = tbody.insertRow();
+        const statusClass = `status-${record.email_status}`;
+        const statusLabel = getStatusLabel(record.email_status);
+
+        row.innerHTML = `
+          <td><strong>${record.user_name || 'Unknown'}</strong></td>
+          <td>${record.personal_email || '-'}</td>
+          <td>${record.system_email || '-'}</td>
+          <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
+          <td>${new Date(record.created_at).toLocaleDateString()}</td>
+          <td>${new Date(record.updated_at).toLocaleDateString()}</td>
+          <td>
+            <div class="action-buttons">
+              <button class="btn-small btn-edit" onclick="editStatus('${record.id}')">Edit</button>
+              <button class="btn-small btn-suspend" onclick="quickUpdateStatus('${record.id}', 'suspended')">Suspend</button>
+              <button class="btn-small btn-quarantine" onclick="quickUpdateStatus('${record.id}', 'quarantine')">Quarantine</button>
+            </div>
+          </td>
+        `;
+      });
+    }
+
+    function getStatusLabel(status) {
+      const labels = {
+        'pending': '⏳ Pending Setup',
+        'created': '✅ Created',
+        'suspended': '⏸️ Suspended',
+        'quarantine': '🔒 Quarantine'
+      };
+      return labels[status] || status;
+    }
+
+    function editStatus(recordId) {
+      currentEditingId = recordId;
+      const record = allRecords.find(r => r.id === recordId);
+      if (!record) return;
+
+      document.getElementById('statusSelect').value = record.email_status;
+      document.getElementById('notesInput').value = record.notes || '';
+      openEditModal();
+    }
+
+    function quickUpdateStatus(recordId, status) {
+      currentEditingId = recordId;
+      document.getElementById('statusSelect').value = status;
+      document.getElementById('notesInput').value = `Status changed to ${getStatusLabel(status)}`;
+      openEditModal();
+    }
+
+    function saveStatusChange(e) {
+      e.preventDefault();
+      
+      const records = getLocalOnboardingLog();
+      const idx = records.findIndex(r => r.id === currentEditingId);
+      
+      if (idx > -1) {
+        records[idx].email_status = document.getElementById('statusSelect').value;
+        records[idx].notes = document.getElementById('notesInput').value;
+        records[idx].updated_at = new Date().toISOString();
+        records[idx].updated_by = getSessionUser().name;
+        
+        saveLocalOnboardingLog(records);
+        loadOnboardingLog();
+        closeEditModal();
+      }
+    }
+
+    function filterRecords() {
+      const statusFilter = document.getElementById('filterStatus').value;
+      const searchText = document.getElementById('searchInput').value.toLowerCase();
+
+      const filtered = allRecords.filter(record => {
+        const matchStatus = !statusFilter || record.email_status === statusFilter;
+        const matchSearch = !searchText || 
+          (record.user_name?.toLowerCase().includes(searchText)) ||
+          (record.personal_email?.toLowerCase().includes(searchText));
+        
+        return matchStatus && matchSearch;
+      });
+
+      renderTable(filtered);
+    }
+
+    function openEditModal() {
+      document.getElementById('editModal').classList.add('active');
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').classList.remove('active');
+    }
+  </script>
+</body>
+</html>
