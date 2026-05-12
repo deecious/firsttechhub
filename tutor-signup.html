@@ -233,7 +233,14 @@
     async function loadCountries() {
       try {
         const response = await fetch('https://restcountries.com/v3.1/all');
+        if (!response.ok) throw new Error(`API error: ${response.status}`);
+
         const countries = await response.json();
+        if (!Array.isArray(countries)) {
+          console.error('API response is not an array:', countries);
+          return;
+        }
+
         countriesCache = countries.map(c => c.name.common).sort();
         const countrySelect = document.getElementById('country');
         countriesCache.forEach(country => {
@@ -244,6 +251,8 @@
         });
       } catch (error) {
         console.error('Failed to load countries:', error);
+        const countrySelect = document.getElementById('country');
+        countrySelect.innerHTML += '<option value="">Loading countries...</option>';
       }
     }
 
