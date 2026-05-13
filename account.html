@@ -44,6 +44,14 @@
       <div id="emailStatusAlert" style="display: none; border-radius: 6px; padding: 15px; margin-bottom: 20px; text-align: center;">
         <p style="margin: 0; font-weight: 500;" id="emailStatusText"></p>
       </div>
+      <div id="emailAssignedNotification" style="display: none; background: #D4EDDA; border-left: 4px solid #28A745; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
+        <p style="margin: 0; color: #155724; font-weight: 500;">📧 System Email Assigned</p>
+        <p style="margin: 8px 0 0 0; color: #155724; font-size: 14px;">Your system email has been assigned: <strong id="assignedEmailText"></strong></p>
+      </div>
+      <div id="notificationsPanel" style="display: none; background: #FFF9E6; border-left: 4px solid #FF9800; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
+        <p style="margin: 0 0 10px 0; color: #E65100; font-weight: 500;">🔔 Notifications</p>
+        <div id="notificationsList"></div>
+      </div>
       <div class="service-card" style="max-width: 620px; margin: 0 auto;">
         <form id="accountForm" class="contact-form" autocomplete="off">
           <h2>Account Settings</h2>
@@ -127,6 +135,32 @@
         statusAlert.style.background = status.color;
         statusAlert.style.color = status.textColor;
         statusText.textContent = `${status.icon} ${status.message}`;
+      }
+
+      // Show email assignment notification
+      if (user?.systemEmail && user?.systemEmail !== user?.email) {
+        document.getElementById('emailAssignedNotification').style.display = 'block';
+        document.getElementById('assignedEmailText').textContent = user.systemEmail;
+      }
+
+      // Show notifications
+      const notifications = JSON.parse(localStorage.getItem('ftbNotifications')) || [];
+      const userNotifications = notifications.filter(n => n.userId === user?.id && !n.read);
+
+      if (userNotifications.length > 0) {
+        document.getElementById('notificationsPanel').style.display = 'block';
+        const notifList = document.getElementById('notificationsList');
+        notifList.innerHTML = '';
+
+        userNotifications.forEach(notif => {
+          const div = document.createElement('div');
+          div.style.cssText = 'background: white; padding: 10px; border-radius: 4px; margin-bottom: 8px; font-size: 13px;';
+          div.innerHTML = `
+            <p style="margin: 0 0 3px 0; font-weight: 500; color: #333;">${notif.title}</p>
+            <p style="margin: 0; color: #666;">${notif.message}</p>
+          `;
+          notifList.appendChild(div);
+        });
       }
     });
   </script>
